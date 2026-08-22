@@ -61,7 +61,7 @@ const isVitalicio = EMAILS_VITALICIOS.includes(email.toLowerCase().trim());
           <span className="font-bold text-xl">Corta<span className="text-purple-400">AI</span></span>
         </div>
         <div className="flex gap-3">
-          <button className="px-4 py-2">Entrar</button>
+ <button onClick={()=>document.getElementById('corte')?.scrollIntoView()} className="px-4 py-2">Entrar</button>         
           <button onClick={()=>document.getElementById('corte')?.scrollIntoView()} className="bg-gradient-to-r from-purple-500 to-pink-500 px-5 py-2 rounded-full font-bold">Criar Conta</button>
         </div>
       </header>
