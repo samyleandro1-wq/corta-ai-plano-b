@@ -23,6 +23,7 @@ export default function Page() {
   }, [email]);
 
   function pegarID(link){
+    let v =link;
     if(v.includes("v=")) v = v.split("v=")[1].split("&")[0];
     if(v.includes("youtu.be/")) v = v.split("youtu.be/")[1].split("?")[0];
     return v.trim();
