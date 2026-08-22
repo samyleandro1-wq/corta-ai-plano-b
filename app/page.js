@@ -11,9 +11,18 @@ export default function Page() {
   const [id, setId] = useState("");
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const [isPago, setIsPago] = useState(false);
+   const [isPago, setIsPago] = useState(false);
+
+  useEffect(() => {
+    if(!email) return;
+    fetch(`/api/pagos?email=${email}`)
+   .then(r => r.json())
+   .then(d => {
+        if(d.liberado) setIsPago(true);
+      });
+  }, [email]);
+
   function pegarID(link){
-    let v = link;
     if(v.includes("v=")) v = v.split("v=")[1].split("&")[0];
     if(v.includes("youtu.be/")) v = v.split("youtu.be/")[1].split("?")[0];
     return v.trim();
