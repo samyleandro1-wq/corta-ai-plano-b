@@ -11,7 +11,7 @@ export default function Page() {
   const [id, setId] = useState("");
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-
+  const [isPago, setIsPago] = useState(false);
   function pegarID(link){
     let v = link;
     if(v.includes("v=")) v = v.split("v=")[1].split("&")[0];
