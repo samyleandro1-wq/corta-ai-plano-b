@@ -62,14 +62,14 @@ const isVitalicio = EMAILS_VITALICIOS.includes(email.toLowerCase().trim());
         </div>
         <div className="flex gap-3">
  <button onClick={()=>document.getElementById('corte')?.scrollIntoView()} className="px-4 py-2">Entrar</button>         
-          <button onClick={()=>document.getElementById('corte')?.scrollIntoView()} className="bg-gradient-to-r from-purple-500 to-pink-500 px-5 py-2 rounded-full font-bold">Criar Conta</button>
+<button onClick={()=>window.open(LINK_PAGAMENTO, '_blank')} className="bg-gradient-to-r from-purple-500 to-pink-500 px-5 py-2 rounded-full font-bold">Criar Conta</button>        
         </div>
       </header>
       <main className="max-w-6xl mx-auto px-4 text-center mt-12">
         <div className="inline-block bg-white/10 px-4 py-1 rounded-full text-sm mb-6">✨ IA de última geração</div>
         <h1 className="text-5xl md:text-7xl font-black leading-tight">Transforme vídeos<br/>longos em <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">cortes</span><br/><span className="bg-gradient-to-r from-pink-400 to-orange-400 bg-clip-text text-transparent">virais</span> em 1 clique</h1>
         <div className="flex flex-col gap-4 max-w-sm mx-auto mt-8">
-          <button onClick={()=>document.getElementById('corte')?.scrollIntoView()} className="bg-gradient-to-r from-purple-500 to-pink-500 py-4 rounded-xl font-bold">⚡ Testar Grátis 1 Corte</button>
+<button onClick={cortarReal} className="bg-gradient-to-r from-purple-500 to-pink-500 py-4 rounded-xl font-bold">⚡ Testar Grátis 1 Corte</button>  
           <a href={LINK_PAGAMENTO} target="_blank" className="border border-white/20 py-4 rounded-xl font-bold block">👑 Assinar Agora R$9,90</a>
         </div>
         <div id="corte" className="mt-16 bg-white/5 p-6 rounded-2xl max-w-2xl mx-auto border border-white/10">
