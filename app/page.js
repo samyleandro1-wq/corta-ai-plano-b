@@ -66,8 +66,15 @@ export default function Page() {
           <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Seu email" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3" />
           <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole o link do YouTube aqui" className="w-full p-4 rounded-xl bg-black/50 border border-white/10" />
           <button onClick={cortarReal} disabled={loading} className="w-full mt-3 bg-white text-black py-4 rounded-xl font-black">{loading? "CORTANDO..." : "ENVIAR PRO CORTE REAL"}</button>
-          {id && <div className="mt-6 grid gap-3">{cuts.map((c, i) => (<div key={i} className="bg-black/50 p-3 rounded-xl text-left"><p className="font-bold">{c.titulo}</p><iframe className="w-full h-48 mt-2 rounded-xl" src={`https://www.youtube.com/embed/${id}?start=${c.inicio}`} allowFullScreen></iframe></div>))}</div>}
-        </div>
+{id && <div className="mt-6 grid gap-3">{cuts.map((c,i)=>(
+<div key={i} className="bg-black/50 p-3 rounded-xl text-left">
+<p className="font-bold text-white">{c.titulo} - {c.inicio}s até {c.fim}s</p>
+<div className="flex gap-2 mt-2">
+<a href={c.link} target="_blank" className="bg-white text-black px-3 py-2 rounded-lg text-sm font-bold">ABRIR</a>
+<button onClick={()=>copiarLink(c.link)} className="bg-purple-600 text-white px-3 py-2 rounded-lg text-sm font-bold">COPIAR LINK</button>
+</div>
+</div>
+))}</div>}          
       </main>
     </div>
   )
