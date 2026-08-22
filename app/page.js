@@ -27,13 +27,16 @@ export default function Page() {
     setId(videoId);
     const isVitalicio = EMAILS_VITALICIOS.includes(email);
     const totalCortes = isVitalicio? 10 : 1;
-    const novosCortes = Array.from({ length: totalCortes }).map((_, i) => ({
-      inicio: i * 60,
-      fim: i * 60 + 28,
-      titulo: `Corte ${i+1} - Momento viral ${isVitalicio? '(Vitalício)' : ''}`
-    }));
+    const novosCortes = Array.from({ length: totalCortes }).map((_, i) => {
+      const inicio = Math.floor(Math.random() * 2000);
+      return {
+        inicio: inicio,
+        fim: inicio + 60,
+        titulo: `Corte ${i+1} - 1 minuto`,
+        link: `https://www.youtube.com/watch?v=${videoId}&t=${inicio}s`
+      }
+    });
     setCuts(novosCortes);
-    fetch(`${LINK_MAKE}?email=${email}&link_youtube=${url}`);
     setLoading(false);
   }
 
