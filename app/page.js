@@ -60,10 +60,20 @@ const isVitalicio = EMAILS_VITALICIOS.includes(email.toLowerCase().trim());
           <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">✂️</div>
           <span className="font-bold text-xl">Corta<span className="text-purple-400">AI</span></span>
         </div>
-        <div className="flex gap-3">
- <button onClick={()=>document.getElementById('corte')?.scrollIntoView()} className="px-4 py-2">Entrar</button>         
-<button onClick={()=>window.open(LINK_PAGAMENTO, '_blank')} className="bg-gradient-to-r from-purple-500 to-pink-500 px-5 py-2 rounded-full font-bold">Criar Conta</button>        
-        </div>
+<div className="flex gap-2 items-center">
+  <input 
+    value={email} 
+    onChange={(e)=>setEmail(e.target.value)} 
+    placeholder="Seu email" 
+    className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-sm w-40" 
+  />
+  <button 
+    onClick={()=>document.getElementById('corte')?.scrollIntoView()} 
+    className="px-5 py-2 rounded-full bg-white text-black font-bold text-sm"
+  >
+    Entrar
+  </button>
+</div>
       </header>
       <main className="max-w-6xl mx-auto px-4 text-center mt-12">
         <div className="inline-block bg-white/10 px-4 py-1 rounded-full text-sm mb-6">✨ IA de última geração</div>
