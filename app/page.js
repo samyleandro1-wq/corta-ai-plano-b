@@ -39,7 +39,10 @@ export default function Page() {
     setCuts(novosCortes);
     setLoading(false);
   }
-
+  function copiarLink(link) {
+    navigator.clipboard.writeText(link);
+    alert("Copiado! Já pode colar no TikTok");
+  }
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
       <header className="flex justify-between items-center p-4 max-w-6xl mx-auto">
