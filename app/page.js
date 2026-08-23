@@ -44,7 +44,7 @@ const isVitalicio = EMAILS_VITALICIOS.map(e => e.toLowerCase()).includes(email.t
       inicio: inicio,
       fim: inicio + 60,
       titulo: `Corte ${i+1} - 1 minuto`,
-      link: `https://youtu.be/${videoId}?t=${inicio}`
+link: `https://www.youtube.com/embed/${videoId}?start=${inicio}&end=${inicio + 60}`     
     }
   });  
     setCuts(novosCortes);
