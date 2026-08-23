@@ -74,26 +74,27 @@ const isVitalicio = EMAILS_VITALICIOS.includes(email.toLowerCase().trim());
     Entrar
   </button>
 </div>
-      </header>
-      <main className="max-w-6xl mx-auto px-4 text-center mt-12">
-        <div className="inline-block bg-white/10 px-4 py-1 rounded-full text-sm mb-6">✨ IA de última geração</div>
-  <h1 className="text-5xl md:text-7xl font-black leading-tight">Transforme vídeos<br/>longos em <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">cortes virais</span></h1>
-  <div className="flex flex-col gap-4 max-w-sm mx-auto mt-8">
-  <button onClick={cortarReal} className="bg-gradient-to-r from-purple-500 to-pink-500 py-4 rounded-xl font-bold">⚡ Testar Grátis 1 Corte</button>
-  <a href={LINK_PAGAMENTO} target="_blank" className="border border-white/20 py-4 rounded-xl font-bold block">💎 Assinar Agora R$9,90/m</a>
-  </div>    
-          <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Seu email" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3" />
-          <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole o link do YouTube aqui" className="w-full p-4 rounded-xl bg-black/50 border border-white/10" />
-          <button onClick={cortarReal} disabled={loading} className="w-full mt-3 bg-white text-black py-4 rounded-xl font-black">{loading? "CORTANDO..." : "ENVIAR PRO CORTE REAL"}</button>
-{id && <div className="mt-6 grid gap-3">{cuts.map((c,i)=>(
+</header>
+<main className="max-w-6xl mx-auto px-4 text-center mt-12">
+<div className="inline-block bg-white/10 px-4 py-1 rounded-full text-sm mb-6">✨ IA de última geração</div>
+<h1 className="text-5xl md:text-7xl font-black leading-tight">Transforme videos<br/>longos em cortes virais</h1>
+<div className="flex flex-col gap-4 max-w-sm mx-auto mt-8">
+<button onClick={cortarReal} className="bg-gradient-to-r from-purple-500 to-pink-500 py-4 rounded-xl font-bold">⚡ Testar Grátis 1 Corte</button>
+<a href={LINK_PAGAMENTO} target="_blank" className="border border-white/20 py-4 rounded-xl font-bold block">💎 Assinar Agora R$9,90/m</a>
+</div>
+<div id="corte" className="mt-16 bg-white/5 p-6 rounded-2xl max-w-2xl mx-auto border border-white/10">
+<input value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Seu email" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3"/>
+<input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="Cole o link do YouTube aqui" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3"/>
+<button onClick={cortarReal} disabled={loading} className="w-full mt-3 bg-white text-black py-4 rounded-xl font-black">{loading ? "CORTANDO..." : "ENVIAR PRO CORTE REAL"}</button>
+<div className="mt-6 grid gap-3">{cuts.map((c,i)=>(
 <div key={i} className="bg-black/50 p-3 rounded-xl text-left">
-<p className="font-bold text-white">{c.titulo} - {c.inicio}s até {c.fim}s</p>
+<p className="font-bold text-white">{c.titulo} - {c.inicio} até {c.fim}</p>
 <div className="flex gap-2 mt-2">
 <a href={c.link} target="_blank" className="bg-white text-black px-3 py-2 rounded-lg text-sm font-bold">ABRIR</a>
 <button onClick={()=>copiarLink(c.link)} className="bg-purple-600 text-white px-3 py-2 rounded-lg text-sm font-bold">COPIAR LINK</button>
 </div>
 </div>
-))}</div>}
+))}</div>
 </div>
 </main>
 </div>
