@@ -94,7 +94,9 @@ const isVitalicio = EMAILS_VITALICIOS.includes(email.toLowerCase().trim());
 <button onClick={()=>copiarLink(c.link)} className="bg-purple-600 text-white px-3 py-2 rounded-lg text-sm font-bold">COPIAR LINK</button>
 </div>
 </div>
-))}</div>}          
-      </main>
-    </div>
-  )
+))}</div>}
+</div>
+</main>
+</div>
+);
+}
