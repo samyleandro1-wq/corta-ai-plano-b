@@ -38,12 +38,12 @@ export default function Page() {
 const isVitalicio = EMAILS_VITALICIOS.includes(email.toLowerCase().trim());   
   const totalCortes = (isVitalicio || isPago) ? 10 : 1;    
     const novosCortes = Array.from({ length: totalCortes }).map((_, i) => {
-      const inicio = Math.floor(Math.random() * 2000);
+      const inicio = Math.floor(Math.random() * 1200);
       return {
         inicio: inicio,
         fim: inicio + 60,
         titulo: `Corte ${i+1} - 1 minuto`,
-        link: `https://www.youtube.com/watch?v=${videoId}&t=${inicio}s`
+        link: `https://www.youtube.be/${videoId}&t=${inicio}s`
       }
     });
     setCuts(novosCortes);
