@@ -92,7 +92,7 @@ player.src = `https://www.youtube.com/embed/${id}?start=${corte.inicio}&end=${co
 <h1 className="text-5xl md:text-7xl font-black leading-tight">Transforme videos<br/>longos em cortes virais</h1>
 <div className="flex flex-col gap-4 max-w-sm mx-auto mt-8">
 <button onClick={cortarReal} className="bg-gradient-to-r from-purple-500 to-pink-500 py-4 rounded-xl font-bold">⚡ Testar Grátis 1 Corte</button>
-
+https://youtu.be/BdLtHuZprBY?si=rejDWOADdj-Hb4W3
 <div id="corte" className="mt-16 bg-white/5 p-6 rounded-2xl max-w-2xl mx-auto border border-white/10">
 <input value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Seu email" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3"/>
 <input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="Cole o link do YouTube aqui" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3"/>
