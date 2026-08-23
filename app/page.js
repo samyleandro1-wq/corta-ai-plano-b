@@ -35,7 +35,7 @@ export default function Page() {
     setLoading(true);
     const videoId = pegarID(url);
     setId(videoId);
-const isVitalicio = EMAILS_VITALICIOS.includes(email.toLowerCase().trim());   
+const isVitalicio = EMAILS_VITALICIOS.map(e => e.toLowerCase()).includes(email.toLowerCase().trim());
   const totalCortes = (isVitalicio || isPago) ? 10 : 1;    
     const novosCortes = Array.from({ length: totalCortes }).map((_, i) => {
       const inicio = Math.floor(Math.random() * 1200);
