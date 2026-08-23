@@ -60,7 +60,7 @@ function abrirCorte(corte) {
   // NÃO manda pro YouTube, abre o player AQUI dentro do CortaAI
   const player = document.getElementById('player-do-corte');
   if(player){
-    player.src = `https://www.youtube.com/embed/${videoId}?start=${corte.inicio}&end=${corte.fim}&autoplay=1`;
+player.src = `https://www.youtube.com/embed/${id}?start=${corte.inicio}&end=${corte.fim}&autoplay=1`;    
     player.scrollIntoView({behavior: 'smooth'});
   }
 }
