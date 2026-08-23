@@ -51,7 +51,7 @@ link: `https://youtu.be/${videoId}?t=${inicio}`
   }
 function copiarLink(corte) {
   // AGORA cada corte é um link DIFERENTE mesmo
-  const linkDoCorte = `https://www.youtube.com/embed/${videoId}?start=${corte.inicio}&end=${corte.fim}`;
+const linkDoCorte = `https://www.youtube.com/embed/${id}?start=${corte.inicio}&end=${corte.fim}`; 
   navigator.clipboard.writeText(linkDoCorte);
   alert(`Corte ${corte.titulo} copiado! É só esse 1 minuto, sem YouTube.`);
 }
