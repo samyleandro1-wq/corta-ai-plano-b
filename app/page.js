@@ -49,10 +49,21 @@ const isVitalicio = EMAILS_VITALICIOS.includes(email.toLowerCase().trim());
     setCuts(novosCortes);
     setLoading(false);
   }
-  function copiarLink(link) {
-    navigator.clipboard.writeText(link);
-    alert("Copiado! Já pode colar no TikTok");
+function copiarLink(corte) {
+  // AGORA cada corte é um link DIFERENTE mesmo
+  const linkDoCorte = `https://www.youtube.com/embed/${videoId}?start=${corte.inicio}&end=${corte.fim}`;
+  navigator.clipboard.writeText(linkDoCorte);
+  alert(`Corte ${corte.titulo} copiado! É só esse 1 minuto, sem YouTube.`);
+}
+
+function abrirCorte(corte) {
+  // NÃO manda pro YouTube, abre o player AQUI dentro do CortaAI
+  const player = document.getElementById('player-do-corte');
+  if(player){
+    player.src = `https://www.youtube.com/embed/${videoId}?start=${corte.inicio}&end=${corte.fim}&autoplay=1`;
+    player.scrollIntoView({behavior: 'smooth'});
   }
+}
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
       <header className="flex justify-between items-center p-4 max-w-6xl mx-auto">
