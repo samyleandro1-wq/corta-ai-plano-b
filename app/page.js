@@ -101,7 +101,7 @@ function abrirCorte(corte) {
 <div key={i} className="bg-black/50 p-3 rounded-xl text-left">
 <p className="font-bold text-white">{c.titulo} - {c.inicio} até {c.fim}</p>
 <div className="flex gap-2 mt-2">
-<a href={c.link} target="_blank" className="bg-white text-black px-3 py-2 rounded-lg text-sm font-bold">ABRIR</a>
+<button onClick={()=>setCorteAtual(c)} className="bg-white text-black px-3 py-2 rounded-lg text-sm font-bold">ABRIR</button>
 <button onClick={()=>copiarLink(c.link)} className="bg-purple-600 text-white px-3 py-2 rounded-lg text-sm font-bold">COPIAR LINK</button>
 </div>
 </div>
