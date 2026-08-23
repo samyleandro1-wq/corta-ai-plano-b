@@ -72,27 +72,13 @@ player.src = `https://www.youtube.com/embed/${id}?start=${corte.inicio}&end=${co
           <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">✂️</div>
           <span className="font-bold text-xl">Corta<span className="text-purple-400">AI</span></span>
         </div>
-<div className="flex gap-2 items-center">
-  <input 
-    value={email} 
-    onChange={(e)=>setEmail(e.target.value)} 
-    placeholder="Seu email" 
-    className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-sm w-40" 
-  />
-  <button 
-    onClick={()=>document.getElementById('corte')?.scrollIntoView()} 
-    className="px-5 py-2 rounded-full bg-white text-black font-bold text-sm"
-  >
-    Entrar
-  </button>
-</div>
+    
 </header>
 <main className="max-w-6xl mx-auto px-4 text-center mt-12">
 <div className="inline-block bg-white/10 px-4 py-1 rounded-full text-sm mb-6">✨ IA de última geração</div>
 <h1 className="text-5xl md:text-7xl font-black leading-tight">Transforme videos<br/>longos em cortes virais</h1>
 <div className="flex flex-col gap-4 max-w-sm mx-auto mt-8">
 <button onClick={cortarReal} className="bg-gradient-to-r from-purple-500 to-pink-500 py-4 rounded-xl font-bold">⚡ Testar Grátis 1 Corte</button>
-https://youtu.be/BdLtHuZprBY?si=rejDWOADdj-Hb4W3
 <div id="corte" className="mt-16 bg-white/5 p-6 rounded-2xl max-w-2xl mx-auto border border-white/10">
 <input value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Seu email" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3"/>
 <input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="Cole o link do YouTube aqui" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3"/>
