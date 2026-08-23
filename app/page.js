@@ -77,12 +77,11 @@ const isVitalicio = EMAILS_VITALICIOS.includes(email.toLowerCase().trim());
       </header>
       <main className="max-w-6xl mx-auto px-4 text-center mt-12">
         <div className="inline-block bg-white/10 px-4 py-1 rounded-full text-sm mb-6">✨ IA de última geração</div>
-        <h1 className="text-5xl md:text-7xl font-black leading-tight">Transforme vídeos<br/>longos em <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">cortes</span><br/><span className="bg-gradient-to-r from-pink-400 to-orange-400 bg-clip-text text-transparent">virais</span> em 1 clique</h1>
   <h1 className="text-5xl md:text-7xl font-black leading-tight">Transforme vídeos<br/>longos em <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">cortes virais</span></h1>
-<div className="flex flex-col gap-4 max-w-sm mx-auto mt-8">
-<button onClick={cortarReal} className="bg-gradient-to-r from-purple-500 to-pink-500 py-4 rounded-xl font-bold">⚡ Testar Grátis 1 Corte</button>
-<a href={LINK_PAGAMENTO} target="_blank" className="border border-white/20 py-4 rounded-xl font-bold block">💎 Assinar Agora R$9,90</a>
-</div>
+  <div className="flex flex-col gap-4 max-w-sm mx-auto mt-8">
+  <button onClick={cortarReal} className="bg-gradient-to-r from-purple-500 to-pink-500 py-4 rounded-xl font-bold">⚡ Testar Grátis 1 Corte</button>
+  <a href={LINK_PAGAMENTO} target="_blank" className="border border-white/20 py-4 rounded-xl font-bold block">💎 Assinar Agora R$9,90/m</a>
+  </div>    
           <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Seu email" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3" />
           <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole o link do YouTube aqui" className="w-full p-4 rounded-xl bg-black/50 border border-white/10" />
           <button onClick={cortarReal} disabled={loading} className="w-full mt-3 bg-white text-black py-4 rounded-xl font-black">{loading? "CORTANDO..." : "ENVIAR PRO CORTE REAL"}</button>
