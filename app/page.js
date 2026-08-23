@@ -97,6 +97,11 @@ function abrirCorte(corte) {
 <input value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Seu email" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3"/>
 <input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="Cole o link do YouTube aqui" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3"/>
 <button onClick={cortarReal} disabled={loading} className="w-full mt-3 bg-white text-black py-4 rounded-xl font-black">{loading ? "CORTANDO..." : "ENVIAR PRO CORTE REAL"}</button>
+{corteAtual && (
+  <div className="mt-6 aspect-video bg-black rounded-2xl overflow-hidden">
+    <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${videoId}?start=${corteAtual.inicio}&end=${corteAtual.fim}&autoplay=1&rel=0`} allowFullScreen></iframe>
+  </div>
+)}  
 <div className="mt-6 grid gap-3">{cuts.map((c,i)=>(
 <div key={i} className="bg-black/50 p-3 rounded-xl text-left">
 <p className="font-bold text-white">{c.titulo} - {c.inicio} até {c.fim}</p>
