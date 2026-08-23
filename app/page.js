@@ -12,7 +12,7 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
    const [isPago, setIsPago] = useState(false);
-
+  const [corteAtual, setCorteAtual] = useState(null);
   useEffect(() => {
     if(!email) return;
     fetch(`/api/pagos?email=${email}`)
