@@ -37,19 +37,16 @@ export default function Page() {
     setId(videoId);
 const isVitalicio = EMAILS_VITALICIOS.map(e => e.toLowerCase()).includes(email.toLowerCase().trim());
   const totalCortes = (isVitalicio || isPago) ? 10 : 1;    
-   const novosCortes = Array.from({ length: totalCortes }).map((_, i) => {
-    // Nunca começa do zero, começa a partir de 30s e espalha pelo vídeo
-    const base = 30 + (i * 180); // cada corte 3 minutos separado do outro
-    const variacao = Math.floor(Math.random() * 90); // + até 90s aleatório pra não ficar robótico
-    const inicio = base + variacao;
-
+  const novosCortes = Array.from({ length: totalCortes }).map((_, i) => {
+    const inicio = 60 + (i * 150) + Math.floor(Math.random() * 100);
     return {
+      id: i,
       inicio: inicio,
       fim: inicio + 60,
       titulo: `Corte ${i+1} - 1 minuto`,
       link: `https://youtu.be/${videoId}?t=${inicio}`
     }
-  }); 
+  });  
     setCuts(novosCortes);
     setLoading(false);
   }
