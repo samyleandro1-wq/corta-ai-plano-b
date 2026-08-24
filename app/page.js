@@ -35,10 +35,10 @@ export default function Page() {
     setId(videoId);
     const isVitalicio=EMAILS_VITALICIOS.map(e=>e.toLowerCase()).includes(email.toLowerCase().trim());
     const totalCortes=(isVitalicio || isPago)? 10 : 1;
-    const novosCortes=Array.from({length: totalCortes}).map((_, i)=>{
-      const inicio=60+(i*150)+Math.floor(Math.random()*100);
-      return { id:i, inicio, fim:inicio+60, titulo:`Corte ${i+1} - 1 minuto`, link:`https://www.youtube.com/embed/${videoId}?start=${inicio}&end=${inicio+60}` }
-    });
+ const novosCortes=Array.from({length: totalCortes}).map((_, i)=>{
+  const inicio=60+(i*150)+Math.floor(Math.random()*100);
+  return { id:i, inicio, fim:inicio+60, titulo:`Corte ${i+1} - 1 minuto`, videoId };
+}); 
     setCuts(novosCortes);
     setLoading(false);
   }
