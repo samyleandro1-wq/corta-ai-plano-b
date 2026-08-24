@@ -54,30 +54,30 @@ export default function Page() {
     },100)
   }
 
-async function baixarVideo(videoId, index) {
+async function baixarVideo(videoId, inicio, index) {
   try {
     setBaixandoId(videoId + "-" + index);
     
-    const res = await fetch("/api/baixar", {
+    const res = await fetch("/api/cortar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ videoId, index })
+      body: JSON.stringify({ videoId, inicio })
     });
     
-    if(!res.ok) throw new Error("erro");
+    if(!res.ok) throw new Error("Erro ao cortar");
     const blob = await res.blob();
     const blobUrl = URL.createObjectURL(blob);
     
     const a = document.createElement("a");
     a.href = blobUrl;
-    a.download = `corte-${index + 1}.mp4`;
+    a.download = `corte-${index + 1}-1min.mp4`;
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(blobUrl);
 
   } catch (e) {
-    alert("Erro ao baixar, tenta de novo");
+    alert("Erro ao baixar o corte de 1 min: " + e.message);
   } finally {
     setBaixandoId(null);
   }
