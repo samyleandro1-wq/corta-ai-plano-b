@@ -1,5 +1,12 @@
-import { NextResponse } from "next/server";
-export async function GET(req){
-  const id = new URL(req.url).searchParams.get("id");
-  return NextResponse.redirect(`https://www.yout.com/watch?v=${id}`);
+export async function GET(request) {
+  const { searchParams } = new URL(request.url)
+  const id = searchParams.get("id")
+  const start = searchParams.get("start")
+
+  if (!id) return new Response("sem id", { status: 400 })
+
+  // yout.com baixa direto
+  const url = `https://yout.com/watch?v=${id}`
+
+  return Response.redirect(url)
 }
