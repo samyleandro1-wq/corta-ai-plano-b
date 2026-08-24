@@ -124,7 +124,7 @@ async function baixarVideo(videoId, inicio, index) {
                   <div className="flex gap-2">
                     <button onClick={()=>abrirCorte(c)} className="bg-white/10 px-3 py-1 rounded text-sm">Ver</button>
                     <button
-                      onClick={()=>baixarVideo(id, idx)}
+                    onClick={()=>baixarVideo(c.videoId || id, c.inicio, idx)} 
                       className="bg-purple-600 px-3 py-1 rounded text-sm font-bold"
                     >
                       {baixandoId === id+"-"+idx? "Baixando..." : "Baixar"}
