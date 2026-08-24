@@ -54,27 +54,20 @@ export default function Page() {
     },100)
   }
 
-  // FUNÇÃO DE DOWNLOAD QUE NÃO DÁ TELA AZUL
   async function baixarVideo(videoId, index) {
     try {
       setBaixandoId(videoId + "-" + index);
-      const res = await fetch(`/api/baixar?id=${videoId}`);
-      if(!res.ok) throw new Error("falhou");
-      const blob = await res.blob();
-      const bUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = bUrl;
-      a.download = `corta-ai-corte-${index+1}.mp4`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(bUrl);
+      const res = await fetch(`https://inv.nadeko.net/api/v1/videos/${videoId}`);
+      const data = await res.json();
+      const downloadUrl = data.formatStreams?.[0]?.url;
+      if (!downloadUrl) throw new Error("sem link");
+      window.open(downloadUrl, "_blank");
     } catch (e) {
-      window.open(`/api/baixar?id=${videoId}`, "_blank");
+      window.open(`https://inv.vern.cc/latest_version?id=${videoId}&itag=22`, "_blank");
     } finally {
       setBaixandoId(null);
     }
-  }
+  } 
 
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
