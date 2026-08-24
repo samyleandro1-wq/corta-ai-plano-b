@@ -57,27 +57,20 @@ export default function Page() {
 async function baixarVideo(videoId, index) {
   try {
     setBaixandoId(videoId + "-" + index);
-
-    // 1. Pega o link do vídeo
-    const res = await fetch("https://co.wuk.sh/api/json", {
+    
+    const res = await fetch("/api/baixar", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({
-        url: `https://www.youtube.com/watch?v=${videoId}`,
-        vQuality: "720"
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ videoId, index })
     });
-    const data = await res.json();
-    if (!data.url) throw new Error("sem url");
-
-    // 2. Baixa o arquivo de verdade pro aparelho
-    const fileRes = await fetch(data.url);
-    const blob = await fileRes.blob();
+    
+    if(!res.ok) throw new Error("erro");
+    const blob = await res.blob();
     const blobUrl = URL.createObjectURL(blob);
     
     const a = document.createElement("a");
     a.href = blobUrl;
-    a.download = `corte-${index + 1}.mp4`; // Nome que vai salvar
+    a.download = `corte-${index + 1}.mp4`;
     document.body.appendChild(a);
     a.click();
     a.remove();
