@@ -81,7 +81,14 @@ player.src = `https://www.youtube.com/embed/${id}?start=${corte.inicio}&end=${co
 <button onClick={cortarReal} className="bg-gradient-to-r from-purple-500 to-pink-500 py-4 rounded-xl font-bold">⚡ Testar Grátis 1 Corte</button>
     </div>
 <div id="corte" className="mt-16 bg-white/5 p-6 rounded-2xl max-w-2xl mx-auto border border-white/10">
-<input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="Cole o link do YouTube aqui" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3"/>
+<input 
+  value={email} 
+  onChange={e=>setEmail(e.target.value)} 
+  placeholder="Seu email" 
+  className="w-full p-3 rounded-lg bg-black/50 border border-white/10 text-white mb-3"
+  type="email"
+/>
+    <input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="Cole o link do YouTube aqui" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3"/>
 <button onClick={cortarReal} disabled={loading} className="w-full mt-3 bg-white text-black py-4 rounded-xl font-black">{loading ? "CORTANDO..." : "ENVIAR PRO CORTE REAL"}</button>
 {corteAtual && (
   <div className="mt-6 aspect-video bg-black rounded-2xl overflow-hidden border border-white/20">
