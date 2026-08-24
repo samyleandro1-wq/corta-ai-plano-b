@@ -54,20 +54,31 @@ export default function Page() {
     },100)
   }
 
-  async function baixarVideo(videoId, index) {
-    try {
-      setBaixandoId(videoId + "-" + index);
-      const res = await fetch(`https://inv.nadeko.net/api/v1/videos/${videoId}`);
-      const data = await res.json();
-      const downloadUrl = data.formatStreams?.[0]?.url;
-      if (!downloadUrl) throw new Error("sem link");
-      window.open(downloadUrl, "_blank");
-    } catch (e) {
-      window.open(`https://inv.vern.cc/latest_version?id=${videoId}&itag=22`, "_blank");
-    } finally {
-      setBaixandoId(null);
+async function baixarVideo(videoId, index) {
+  try {
+    setBaixandoId(videoId + "-" + index);
+    const res = await fetch("https://api.cobalt.tools/api/json", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        vQuality: "720",
+        filenamePattern: "basic"
+      })
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.open(data.url, "_blank");
+    } else {
+      throw new Error("sem link");
     }
-  } 
+  } catch (e) {
+    // fallback final se cobalt cair
+    window.open(`https://www.youtube.com/watch?v=${videoId}`, "_blank");
+  } finally {
+    setBaixandoId(null);
+  }
+}
 
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
