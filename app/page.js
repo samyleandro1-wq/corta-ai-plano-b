@@ -130,8 +130,12 @@ async function baixarVideo(videoId, index) {
                   </div>
                   <div className="flex gap-2">
                     <button onClick={()=>abrirCorte(c)} className="bg-white/10 px-3 py-1 rounded text-sm">Ver</button>
-                    <button
-                      onClick={()=>baixarVideo(id, idx)}
+                <button
+  onClick={() => baixarVideo(c.id || c.videoId || videoId, idx)}
+  className="bg-purple-600 px-3 py-1 rounded text-sm font-bold"
+>
+  {baixandoId === (c.id + "-" + idx) ? "..." : "Baixar"}
+</button> 
                       className="bg-purple-600 px-3 py-1 rounded text-sm font-bold"
                     >
                       {baixandoId === id+"-"+idx? "Baixando..." : "Baixar"}
