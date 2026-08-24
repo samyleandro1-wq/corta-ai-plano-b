@@ -106,7 +106,7 @@ player.src = `https://www.youtube.com/embed/${id}?start=${corte.inicio}&end=${co
 <p className="font-bold text-white">{c.titulo} - {c.inicio} até {c.fim}</p>
 <div className="flex gap-2 mt-2">
 <button onClick={()=>setCorteAtual(c)} className="bg-white text-black px-3 py-2 rounded-lg text-sm font-bold">ABRIR</button>
-<button onClick={()=>window.open(`/api/baixar?id=${videoId}`, '_blank')} className="bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold">BAIXAR</button>
+<button onClick={()=>window.open('/api/baixar?id=' + videoId, '_blank')} className="bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold">BAIXAR</button>
 </div>
 ))}</div>
 </div>
