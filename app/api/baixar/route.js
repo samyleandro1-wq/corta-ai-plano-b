@@ -4,41 +4,24 @@ export async function GET(request) {
   if (!id) return new Response("sem id", { status: 400 })
 
   try {
-    // API que pega o link direto do YouTube (googlevideo.com) - não é bloqueada
-    const res = await fetch("https://api.cobalt.tools/api/json", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({
-        url: `https://www.youtube.com/watch?v=${id}`,
-        vQuality: "720",
-        filenamePattern: "basic"
-      })
+    // Pega o link direto do vídeo - funciona no Brasil
+    const res = await fetch(`https://pipedapi.kavin.rocks/streams/${id}`, {
+      headers: { "User-Agent": "Mozilla/5.0" }
     })
-
     const data = await res.json()
-    
-    // Se pegou o link direto, já manda baixar
-    if (data.url) {
-      return Response.redirect(data.url)
+
+    // Pega o melhor MP4 com áudio (720p ou 360p)
+    const video = data.videoStreams?.find(v => v.mimeType?.includes("mp4") && v.quality?.includes("720p")) 
+               || data.videoStreams?.find(v => v.mimeType?.includes("mp4"))
+               || data.audioStreams?.[0]
+
+    if (video?.url) {
+      return Response.redirect(video.url)
     }
   } catch (e) {
-    console.log("erro cobalt", e)
+    console.log("erro piped", e)
   }
 
-  // Plano B se falhar - outro servidor que não é bloqueado
-  try {
-    const res2 = await fetch("https://co.wuk.sh/api/json", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({ url: `https://www.youtube.com/watch?v=${id}` })
-    })
-    const data2 = await res2.json()
-    if (data2.url) return Response.redirect(data2.url)
-  } catch (e) {}
-
-  // Último backup
-  return Response.redirect(`https://www.youtube.com/watch?v=${id}`)
+  // Se falhar, manda pra um que NUNCA é bloqueado no Brasil
+  return Response.redirect(`https://en.savefrom.net/1-youtube-video-downloader-8/?url=https://www.youtube.com/watch?v=${id}`)
 }
