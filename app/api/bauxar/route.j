@@ -1,18 +1,29 @@
-async function baixarVideo(videoId, inicio, idx){
-  try{
-    setBaixandoId(videoId+"-"+idx);
-    const res = await fetch("/api/baixar",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({videoId})
+export async function POST(req) {
+  try {
+    const { videoId } = await req.json();
+    
+    const cobalt = await fetch("https://api.cobalt.tools/api/json", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        vQuality: "720",
+        filenamePattern: "basic"
+      })
     });
-    const data = await res.json();
-    const a=document.createElement("a");
-    a.href=data.url;
-    a.download=`corte-${idx+1}-1min.mp4`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }catch(e){ alert("Erro"); }
-  finally{ setBaixandoId(null); }
+
+    const data = await cobalt.json();
+    
+    if (!data.url) {
+      return Response.json({ error: "não gerou link" }, { status: 500 });
+    }
+
+    return Response.json({ url: data.url });
+
+  } catch (e) {
+    return Response.json({ error: e.message }, { status: 500 });
+  }
 }
