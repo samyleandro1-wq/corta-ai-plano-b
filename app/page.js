@@ -101,14 +101,16 @@ player.src = `https://www.youtube.com/embed/${id}?start=${corte.inicio}&end=${co
     <p className="text-center text-white/60 text-xs mt-2">Tocando corte de {corteAtual.inicio}s até {corteAtual.fim}s</p>
   </div>
 )}
-<div className="mt-6 grid gap-3">{cuts.map((c,i)=>(
+<div className="mt-6 grid gap-3">
+{cuts.map((c,i)=>(
 <div key={i} className="bg-black/50 p-3 rounded-xl text-left">
-<p className="font-bold text-white">{c.titulo} - {c.inicio} até {c.fim}</p>
+<p className="font-bold text-white">{c.titulo} - {c.inicio} ate {c.fim}</p>
 <div className="flex gap-2 mt-2">
 <button onClick={()=>setCorteAtual(c)} className="bg-white text-black px-3 py-2 rounded-lg text-sm font-bold">ABRIR</button>
-<button onClick={()=>{window.open("/api/baixar?id=" + videoId, "_blank")}} className="bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold">BAIXAR</button>
+<button onClick={()=>window.open("/api/baixar?id=" + videoId, "_blank")} className="bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold">BAIXAR</button>
 </div>
-))}</div>
+</div>
+))}
 </div>
 </main>
 </div>
