@@ -1,27 +1,59 @@
+export const dynamic = 'force-dynamic';
+
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
-    if (!id) return Response.json({ error: "sem id" }, { status: 400 });
+    if (!id) return new Response(JSON.stringify({error:"sem id"}), { status: 400 });
 
-    // tenta 2 servidores piped
-    const bases = ["https://pipedapi.kavin.rocks", "https://api.piped.private.coffee"];
+    const PIPED_SERVERS = [
+      "https://pipedapi.kavin.rocks",
+      "https://api.piped.private.coffee",
+      "https://pipedapi.tokhmi.xyz",
+      "https://pipedapi.moomoo.me",
+      "https://pipedapi.syncpundi.com",
+      "https://piped-api.lunar.icu"
+    ];
+
     let data = null;
-    for (let base of bases) {
+    let lastError = "";
+
+    for (const base of PIPED_SERVERS) {
       try {
-        const r = await fetch(`${base}/streams/${id}`, { next: { revalidate: 0 } });
-        if (r.ok) { data = await r.json(); break; }
-      } catch(e){}
+        const r = await fetch(`${base}/streams/${id}`, { cache: "no-store", signal: AbortSignal.timeout(8000) });
+        if (r.ok) {
+          data = await r.json();
+          if (data.videoStreams?.length) break;
+        }
+      } catch (e) {
+        lastError = e.message;
+        continue;
+      }
     }
-    if (!data) return Response.json({ error: "piped off" }, { status: 500 });
+
+    if (!data ||!data.videoStreams) {
+      return new Response(JSON.stringify({ error: "piped off", detail: lastError }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
 
     const stream = data.videoStreams
      .filter(s => s.mimeType.includes("mp4") &&!s.videoOnly)
-     .sort((a,b) => b.height - a.height)[0] || data.videoStreams[0];
+     .sort((a,b) => (b.height || 0) - (a.height || 0))[0];
 
-    // redireciona pro mp4 de verdade - o navegador baixa
-    return Response.redirect(stream.url, 302);
+    if (!stream) return new Response(JSON.stringify({error:"sem mp4"}), { status: 404 });
+
+    const videoRes = await fetch(stream.url);
+
+    return new Response(videoRes.body, {
+      headers: {
+        "Content-Type": "video/mp4",
+        "Content-Disposition": `attachment; filename="corta-ai-${id}.mp4"`,
+      },
+    });
+
   } catch (e) {
-    return Response.json({ error: "erro baixar" }, { status: 500 });
+    return new Response(JSON.stringify({error:"erro", msg: e.message}), { status: 500 });
   }
 }
