@@ -1,32 +1,39 @@
-import ytdl from "@distube/ytdl-core"
-
-export async function GET(request) {
-  const { searchParams } = new URL(request.url)
-  const id = searchParams.get("id")
-  if (!id) return new Response("sem id", { status: 400 })
-
+async function baixarVideo(videoId) {
   try {
-    const url = `https://www.youtube.com/watch?v=${id}`
-    const info = await ytdl.getInfo(url)
-    
-    // Pega o melhor mp4 que já vem com áudio
-    const format = ytdl.chooseFormat(info.formats, { 
-      quality: "highest",
-      filter: f => f.hasAudio && f.hasVideo && f.container === "mp4"
-    })
+    alert("Preparando download...")
 
-    if (!format?.url) throw new Error("sem formato")
+    // Pega link direto do YouTube (não usa site bloqueado)
+    const res = await fetch(`https://pipedapi.kavin.rocks/streams/${videoId}`)
+    const data = await res.json()
 
-    const res = await fetch(format.url)
-    
-    return new Response(res.body, {
-      headers: {
-        "Content-Type": "video/mp4",
-        "Content-Disposition": `attachment; filename="corte-${id}.mp4"`,
-      }
-    })
+    // Pega um mp4 com áudio
+    const stream = data.videoStreams.find(s => !s.videoOnly && s.mimeType.includes("mp4")) 
+                || data.videoStreams[0]
+
+    if (!stream?.url) {
+      alert("Erro ao pegar vídeo, tentando outro servidor...")
+      // tenta segundo servidor
+      const res2 = await fetch(`https://pipedapi.adminforge.de/streams/${videoId}`)
+      const data2 = await res2.json()
+      const stream2 = data2.videoStreams.find(s => !s.videoOnly)
+      if (!stream2?.url) throw new Error("sem link")
+      
+      window.location.href = stream2.url
+      return
+    }
+
+    // Força o download
+    const a = document.createElement("a")
+    a.href = stream.url
+    a.download = `corte-${videoId}.mp4`
+    a.target = "_blank"
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+
   } catch (e) {
-    console.log(e)
-    return new Response("Erro: " + e.message, { status: 500 })
+    console.error(e)
+    // Último backup que funciona mesmo com DNS bloqueado
+    window.open(`https://piped.video/watch?v=${videoId}`, "_blank")
   }
 }
