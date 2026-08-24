@@ -13,7 +13,7 @@ export default function Page() {
   const [email, setEmail] = useState("");
   const [isPago, setIsPago] = useState(false);
   const [corteAtual, setCorteAtual] = useState(null);
-  const [baixandoId, setBaixandoId] = useState(null); // <<< IMPLANTE 1 - só isso
+  const [baixandoId, setBaixandoId] = useState(null);
 
   useEffect(() => {
     if(!email) return;
@@ -54,14 +54,24 @@ export default function Page() {
     },100)
   }
 
-  // <<< IMPLANTE 2 - SÓ ESSA FUNÇÃO NOVA, NADA MAIS
-  async function baixarVideo(videoId) {
+  // FUNÇÃO DE DOWNLOAD QUE NÃO DÁ TELA AZUL
+  async function baixarVideo(videoId, index) {
     try {
-      setBaixandoId(videoId);
-      window.open(`/api/baixar?id=${videoId}`, "_blank");
-      setTimeout(()=> setBaixandoId(null), 2000);
+      setBaixandoId(videoId + "-" + index);
+      const res = await fetch(`/api/baixar?id=${videoId}`);
+      if(!res.ok) throw new Error("falhou");
+      const blob = await res.blob();
+      const bUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = bUrl;
+      a.download = `corta-ai-corte-${index+1}.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(bUrl);
     } catch (e) {
-      window.open(`https://piped.video/watch?v=${videoId}`, "_blank");
+      window.open(`/api/baixar?id=${videoId}`, "_blank");
+    } finally {
       setBaixandoId(null);
     }
   }
@@ -80,32 +90,42 @@ export default function Page() {
         <h1 className="text-5xl md:text-7xl font-black leading-tight">Transforme videos<br/>longos em cortes virais</h1>
 
         <div className="flex flex-col gap-4 max-w-sm mx-auto mt-8">
-          <button onClick={cortarReal} className="bg-gradient-to-r from-purple-500 to-pink-500 py-4 rounded-xl font-bold">⚡ Testar Grátis 1 Corte</button>
+          <button onClick={cortarReal} className="bg-gradient-to-r from-purple-500 to-pink-500 py-4 rounded-xl font-bold">
+            {loading? "Cortando..." : "⚡ Testar Grátis 1 Corte"}
+          </button>
           <a href={LINK_PAGAMENTO} target="_blank" className="bg-white/10 border border-white/20 py-4 rounded-xl font-bold">🔓 Desbloquear 10 cortes - R$ 9,90</a>
         </div>
 
         <div id="corte" className="mt-16 bg-white/5 p-6 rounded-2xl max-w-2xl mx-auto border border-white/10">
           <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Seu email" className="w-full p-3 rounded-lg bg-black/50 border border-white/10 text-white mb-3" type="email"/>
-          <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole o link do YouTube aqui" className="w-full p-4 rounded-xl bg-black/50 border border-white/10 mb-3"/>
-          <button onClick={cortarReal} disabled={loading} className="w-full mt-3 bg-white text-black py-4 rounded-xl font-black">{loading? "CORTANDO..." : "ENVIAR PRO CORTE REAL"}</button>
-
-          {cuts.length>0 && (
-            <div className="mt-6 grid gap-3 text-left">
-              {cuts.map(corte=>(
-                <div key={corte.id} className="bg-black/30 p-4 rounded-xl flex justify-between items-center border border-white/5">
-                  <span className="font-bold">{corte.titulo}</span>
-                  <div className="flex gap-2">
-                    <button onClick={()=>abrirCorte(corte)} className="bg-white/10 px-4 py-2 rounded-lg">Ver</button>
-                    <button onClick={()=>baixarVideo(id)} className="bg-[#00ffaa] text-black px-4 py-2 rounded-lg font-bold">{baixandoId===id?"Baixando...":"Baixar"}</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole o link do YouTube" className="w-full p-3 rounded-lg bg-black/50 border border-white/10 text-white mb-3" />
+          <button onClick={cortarReal} className="w-full bg-purple-600 py-3 rounded-lg font-bold">Cortar Agora</button>
 
           {corteAtual && (
             <div className="mt-8">
-              <iframe id="player-do-corte" className="w-full aspect-video rounded-xl" allowFullScreen></iframe>
+              <iframe id="player-do-corte" className="w-full h-[300px] rounded-xl" allow="autoplay; encrypted-media" allowFullScreen></iframe>
+            </div>
+          )}
+
+          {cuts.length > 0 && (
+            <div className="mt-8 grid gap-3 text-left">
+              {cuts.map((c, idx) => (
+                <div key={c.id} className="flex justify-between items-center bg-black/50 p-3 rounded-lg border border-white/10">
+                  <div>
+                    <p className="font-bold">{c.titulo}</p>
+                    <p className="text-xs text-white/50">{c.inicio}s - {c.fim}s</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={()=>abrirCorte(c)} className="bg-white/10 px-3 py-1 rounded text-sm">Ver</button>
+                    <button
+                      onClick={()=>baixarVideo(id, idx)}
+                      className="bg-purple-600 px-3 py-1 rounded text-sm font-bold"
+                    >
+                      {baixandoId === id+"-"+idx? "Baixando..." : "Baixar"}
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
