@@ -131,7 +131,7 @@ a.remove();
                   <button onClick={() => baixarVideo(c.id || videoId, idx)} className="bg-purple-600 px-3 py-1 rounded text-sm font-bold">{baixandoId === (c.id + "-" + idx) || baixandoId === (videoId + "-" + idx) ? "..." : "Baixar"}</button>
                 </div>
               </div>
-                  ))}
+              ))}
       </div>
     )}
   </>
