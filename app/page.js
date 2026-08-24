@@ -50,39 +50,32 @@ export default function Page() {
     },100)
   }
 
-  // SEU CODIGO DAS 2:28 QUE BAIXA DE VERDADE
+  // CÓDIGO NOVO JÁ NO LUGAR CERTO - SUBSTITUI O DAS 2:28
   async function baixarVideo(videoId) {
     try {
-      setBaixandoId(videoId)
-      alert("Preparando download...")
-      const res = await fetch(`https://pipedapi.kavin.rocks/streams/${videoId}`)
-      const data = await res.json()
-      const stream = data.videoStreams.find(s =>!s.videoOnly && s.mimeType.includes("mp4")) || data.videoStreams[0]
-      if (!stream?.url) throw new Error("sem link")
-      window.open(stream.url, "_blank")
-      setBaixandoId(null)
+      setBaixandoId(videoId);
+      window.open(`/api/baixar?id=${videoId}`, "_blank");
+      setTimeout(()=> setBaixandoId(null), 2000);
     } catch (e) {
-      console.error(e)
-      window.open(`https://piped.video/watch?v=${videoId}`, "_blank")
-      setBaixandoId(null)
+      window.open(`https://piped.video/watch?v=${videoId}`, "_blank");
+      setBaixandoId(null);
     }
   }
 
   return (
     <div className="min-h-screen bg-[#0a0614] text-white p-4">
       <div className="max-w-2xl mx-auto">
-        <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Seu email" className="w-full p-3 rounded-lg bg-black/50 border border-white/10 mb-3"/>
-        <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Link YouTube" className="w-full p-3 rounded-lg bg-black/50 border border-white/10 mb-3"/>
+        <h1 className="text-3xl font-bold text-center mb-6">CORTA AI - PLANO B</h1>
+        <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Seu email" className="w-full p-3 rounded-lg bg-black/50 border border-white/10 mb-3 text-white"/>
+        <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Link YouTube" className="w-full p-3 rounded-lg bg-black/50 border border-white/10 mb-3 text-white"/>
         <button onClick={cortarReal} className="w-full bg-purple-600 py-3 rounded-xl font-bold">{loading?"CORTANDO...":"GERAR CORTES"}</button>
 
         {cuts.map(corte=>(
-          <div key={corte.id} className="mt-3 bg-white/5 p-4 rounded-xl flex justify-between">
+          <div key={corte.id} className="mt-3 bg-white/5 p-4 rounded-xl flex justify-between items-center">
             <span>{corte.titulo}</span>
             <div className="flex gap-2">
               <button onClick={()=>abrirCorte(corte)} className="bg-white/20 px-3 py-1 rounded">Ver</button>
-             <button onClick={()=>baixarVideo(id)} className="bg-[#00ffaa] text-black font-bold px-4 py-2 rounded-lg">
-  {baixandoId === id? "Baixando..." : "⬇️ Baixar"}
-</button> 
+              <button onClick={()=>baixarVideo(id)} className="bg-[#00ffaa] text-black px-3 py-1 rounded font-bold">{baixandoId === id ? "Baixando..." : "Baixar"}</button>
             </div>
           </div>
         ))}
