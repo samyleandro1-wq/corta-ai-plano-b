@@ -1,40 +1,20 @@
-export const dynamic = 'force-dynamic';
-
-export async function GET(req) {
+const baixarCorte = async (videoId) => {
   try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-    if (!id) return new Response("sem id", { status: 400 });
-
-    // Tenta 3 servidores diferentes
-    const servers = [
-      "https://inv.nadeko.net",
-      "https://invidious.nerdvpn.de",
-      "https://invidious.io.lol"
-    ];
-
-    for (const base of servers) {
-      try {
-        const r = await fetch(`${base}/api/v1/videos/${id}`, {
-          cache: "no-store",
-          headers: { "User-Agent": "Mozilla/5.0" }
-        });
-        if (!r.ok) continue;
-
-        const text = await r.text();
-        if (text.includes("Endpoint disabled") || text.startsWith("Endpoint")) continue;
-
-        const data = JSON.parse(text);
-        const url = data.formatStreams?.[0]?.url;
-        if (!url) continue;
-
-        // Redireciona direto - baixa instantâneo, sem travar em Baixando...
-        return Response.redirect(url, 302);
-      } catch(e){ continue; }
+    // Tenta direto do navegador, sem passar pela Vercel
+    const res = await fetch(`https://inv.nadeko.net/api/v1/videos/${videoId}`);
+    const data = await res.json();
+    
+    // Pega o link mp4 com áudio
+    const link = data.formatStreams?.[0]?.url;
+    
+    if(link){
+      // Abre e já baixa como .mp4 na pasta Downloads
+      window.open(link, '_blank');
+    } else {
+      alert("Link expirado, gera o corte de novo");
     }
-
-    return new Response(JSON.stringify({error:"tenta de novo"}), {status:500});
   } catch(e){
-    return new Response(JSON.stringify({error:e.message}), {status:500});
+    // Fallback 2 - se o primeiro cair
+    window.open(`https://inv.vern.cc/latest_version?id=${videoId}&itag=22`, '_blank');
   }
 }
