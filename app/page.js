@@ -57,29 +57,38 @@ export default function Page() {
 async function baixarVideo(videoId, index) {
   try {
     setBaixandoId(videoId + "-" + index);
-    const res = await fetch("https://api.cobalt.tools/api/json", {
+
+    // 1. Pega o link do vídeo
+    const res = await fetch("https://co.wuk.sh/api/json", {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
         url: `https://www.youtube.com/watch?v=${videoId}`,
-        vQuality: "720",
-        filenamePattern: "basic"
+        vQuality: "720"
       })
     });
     const data = await res.json();
-    if (data.url) {
-      window.open(data.url, "_blank");
-    } else {
-      throw new Error("sem link");
-    }
+    if (!data.url) throw new Error("sem url");
+
+    // 2. Baixa o arquivo de verdade pro aparelho
+    const fileRes = await fetch(data.url);
+    const blob = await fileRes.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = `corte-${index + 1}.mp4`; // Nome que vai salvar
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(blobUrl);
+
   } catch (e) {
-    // fallback final se cobalt cair
-    window.open(`https://www.youtube.com/watch?v=${videoId}`, "_blank");
+    alert("Erro ao baixar, tenta de novo");
   } finally {
     setBaixandoId(null);
   }
 }
-
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
       <header className="flex justify-between items-center p-4 max-w-6xl mx-auto">
