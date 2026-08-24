@@ -101,6 +101,7 @@ player.src = `https://www.youtube.com/embed/${id}?start=${corte.inicio}&end=${co
     <p className="text-center text-white/60 text-xs mt-2">Tocando corte de {corteAtual.inicio}s até {corteAtual.fim}s</p>
   </div>
 )}
+{cuts && (
 <div className="mt-6 grid gap-3">
 {cuts.map((c,i)=>(
 <div key={i} className="bg-black/50 p-3 rounded-xl text-left">
@@ -112,6 +113,7 @@ player.src = `https://www.youtube.com/embed/${id}?start=${corte.inicio}&end=${co
 </div>
 ))}
 </div>
+)}
 </main>
 </div>
 );
