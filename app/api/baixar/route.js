@@ -8,42 +8,45 @@ export async function GET(req) {
 
     const youtubeUrl = `https://www.youtube.com/watch?v=${id}`;
 
-    // LISTA DE CONVERSORES - se um cair vai pro outro
-    const cobaltServers = [
-      "https://api.cobalt.tools",
-      "https://co.wuk.sh",
-      "https://api.ia.sav-a.com"
+    const servers = [
+      "https://api.cobalt.tools/api/json",
+      "https://co.wuk.sh/api/json",
+      "https://api.ia.sav-a.com/api/json"
     ];
 
-    for (const server of cobaltServers) {
+    for (const apiUrl of servers) {
       try {
-        const r = await fetch(`${server}/`, {
+        const r = await fetch(apiUrl, {
           method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ url: youtubeUrl, vCodec: "h264", vQuality: "720", filenamePattern: "basic" }),
+          headers: { 
+            "Content-Type": "application/json", 
+            "Accept": "application/json" 
+          },
+          body: JSON.stringify({ 
+            url: youtubeUrl, 
+            vCodec: "h264", 
+            vQuality: "720",
+            isAudioOnly: false
+          }),
           signal: AbortSignal.timeout(15000)
         });
-        if (!r.ok) continue;
         const data = await r.json();
-        const downloadUrl = data.url || data.stream;
+        const downloadUrl = data.url;
         if (!downloadUrl) continue;
 
-        const videoRes = await fetch(downloadUrl, { signal: AbortSignal.timeout(20000) });
+        const videoRes = await fetch(downloadUrl);
         if (!videoRes.ok || !videoRes.body) continue;
 
         return new Response(videoRes.body, {
           headers: {
             "Content-Type": "video/mp4",
-            "Content-Disposition": `attachment; filename="corta-ai-${id}.mp4"`,
-            "Cache-Control": "no-cache"
+            "Content-Disposition": `attachment; filename="corte-${id}.mp4"`,
           },
         });
       } catch (e) { continue; }
     }
 
-    return new Response(JSON.stringify({ error: "todos os conversores off, tente em 1 min" }), {
-      status: 500, headers: { "Content-Type": "application/json" }
-    });
+    return new Response(JSON.stringify({ error: "tenta de novo em 10s" }), { status: 500 });
 
   } catch (e) {
     return new Response(JSON.stringify({ error: e.message }), { status: 500 });
