@@ -106,19 +106,10 @@ player.src = `https://www.youtube.com/embed/${id}?start=${corte.inicio}&end=${co
 <p className="font-bold text-white">{c.titulo} - {c.inicio} até {c.fim}</p>
 <div className="flex gap-2 mt-2">
 <button onClick={()=>setCorteAtual(c)} className="bg-white text-black px-3 py-2 rounded-lg text-sm font-bold">ABRIR</button>
-<button onClick={async()=>{
-  const btn = document.activeElement;
-  btn.innerText='BAIXANDO...';
-  const r = await fetch(`/api/baixar?url=${encodeURIComponent(c.link)}&start=${c.inicio}&end=${c.fim}`);
-  if(!r.ok){ alert('Erro ao baixar'); btn.innerText='BAIXAR MP4'; return; }
-  const blob = await r.blob();
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${c.titulo || 'corte'}-${c.inicio}-${c.fim}.mp4`;
-  a.click();
-  URL.revokeObjectURL(url);
-  btn.innerText='BAIXAR MP4';
+<button onClick={()=>{
+  const videoId = c.link.split('v=')[1]?.split('&')[0] || c.link.split('/').pop();
+  // Abre site que baixa de verdade
+  window.open(`https://www.y2mate.is/youtube/${videoId}`, '_blank');
 }} className="bg-purple-600 text-white px-3 py-2 rounded-lg text-sm font-bold">BAIXAR MP4</button>
 </div>
 </div>
