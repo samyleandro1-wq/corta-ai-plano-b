@@ -66,26 +66,30 @@ async function cortarReal(){
 async function baixarVideo(videoId, inicio, index) {
   try {
     setBaixandoId(videoId + "-" + index);
+    // Chama o servidor que baixa MP4 de verdade
+    const res = await fetch("/api/baixar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ videoId, inicio })
+    });
+    const data = await res.json();
     
-    // Por enquanto vamos baixar direto sem depender do /api/baixar quebrado
-    // Isso abre o corte exato no YouTube
-    const urlCorte = `https://www.youtube.com/watch?v=${videoId}&t=${inicio}s`;
+    // Agora sim baixa o arquivo .mp4
+    const file = await fetch(data.url);
+    const blob = await file.blob();
+    const blobUrl = URL.createObjectURL(blob);
     
-    // Cria o download de verdade - baixa o link do corte
     const a = document.createElement("a");
-    a.href = urlCorte;
-    a.target = "_blank";
+    a.href = blobUrl;
     a.download = `corte-${index + 1}-1min.mp4`;
     document.body.appendChild(a);
     a.click();
     a.remove();
-
-    // Abre também o player pra pessoa ver
-    abrirCorte({ inicio, fim: inicio+60, id: index });
-
+    URL.revokeObjectURL(blobUrl);
+    
   } catch (e) {
     console.log(e);
-    window.open(`https://www.youtube.com/watch?v=${videoId}&t=${inicio}s`, "_blank");
+    alert("Erro ao baixar MP4: " + e.message);
   } finally {
     setBaixandoId(null);
   }
