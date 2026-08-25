@@ -1,29 +1,39 @@
-export async function POST(req) {
+export async function GET(req) {
+  const { searchParams } = new URL(req.url);
+  const videoId = searchParams.get("videoId");
+  const inicio = searchParams.get("inicio") || "0";
+  const fim = searchParams.get("fim") || "30";
+
+  if (!videoId) return new Response("sem id", { status: 400 });
+
   try {
-    const { videoId } = await req.json();
-    
-    // API que retorna link .mp4 direto
-    const cobaltRes = await fetch("https://api.cobalt.tools/api/json", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        url: `https://www.youtube.com/watch?v=${videoId}`,
-        vCodec: "h264",
-        vQuality: "720"
-      })
+    // Pega o MP4 original do YouTube (já sem ser YouTube)
+    const invRes = await fetch(`https://inv.nadeko.net/api/v1/videos/${videoId}`, {
+      headers: { "User-Agent": "Mozilla/5.0" }
     });
+    const invData = await invRes.json();
+    const format = invData.formatStreams?.find(f => f.itag === "18") || invData.formatStreams?.[0];
+    if (!format?.url) throw new Error("sem mp4");
 
-    const cobaltData = await cobaltRes.json();
+    const videoRes = await fetch(format.url);
+    const blob = await videoRes.arrayBuffer();
 
-    // Se conseguiu o link direto .mp4, retorna
-    if (cobaltData.url) {
-      return Response.json({ url: cobaltData.url });
-    }
-
-    // Se falhar, fallback
-    return Response.json({ url: `https://www.youtube.com/watch?v=${videoId}` });
-
+    // Aqui ele já devolve como ARQUIVO MP4, não como página do YouTube
+    return new Response(blob, {
+      headers: {
+        "Content-Type": "video/mp4",
+        // Esse attachment faz cair na Galeria / Downloads
+        "Content-Disposition": `attachment; filename="corte-${inicio}-${fim}-${videoId}.mp4"`,
+      },
+    });
   } catch (e) {
-    return Response.json({ error: "erro", details: e.message }, { status: 500 });
+    return new Response("erro ao cortar mp4: " + e.message, { status: 500 });
   }
+}
+
+export async function POST(req) {
+  const { videoId, inicio, fim } = await req.json();
+  return Response.json({ 
+    url: `/api/baixar?videoId=${videoId}&inicio=${inicio}&fim=${fim}` 
+  });
 }
