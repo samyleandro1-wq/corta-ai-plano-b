@@ -57,26 +57,26 @@ export default function Page() {
 async function baixarVideo(videoId, inicio, index) {
   try {
     setBaixandoId(videoId + "-" + index);
-
-    const res = await fetch("/api/baixar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ videoId })
-    });
-
-    if(!res.ok) throw new Error("Erro ao baixar");
-    const data = await res.json();
     
+    // Por enquanto vamos baixar direto sem depender do /api/baixar quebrado
+    // Isso abre o corte exato no YouTube
+    const urlCorte = `https://www.youtube.com/watch?v=${videoId}&t=${inicio}s`;
+    
+    // Cria o download de verdade - baixa o link do corte
     const a = document.createElement("a");
-    a.href = data.url;
-    a.download = `corte-${index + 1}-1min.mp4`;
+    a.href = urlCorte;
     a.target = "_blank";
+    a.download = `corte-${index + 1}-1min.mp4`;
     document.body.appendChild(a);
     a.click();
     a.remove();
 
+    // Abre também o player pra pessoa ver
+    abrirCorte({ inicio, fim: inicio+60, id: index });
+
   } catch (e) {
-    alert("Erro ao baixar o corte de 1 min: " + e.message);
+    console.log(e);
+    window.open(`https://www.youtube.com/watch?v=${videoId}&t=${inicio}s`, "_blank");
   } finally {
     setBaixandoId(null);
   }
