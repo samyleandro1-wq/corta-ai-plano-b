@@ -57,29 +57,19 @@ export default function Page() {
     setTimeout(()=>{ document.getElementById('player-do-corte')?.scrollIntoView({behavior:'smooth'}) },150)
   }
 
-  const baixarVideo = async (videoIdParaBaixar) => {
-    try {
-      const res = await fetch("/api/baixar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ videoId: videoIdParaBaixar || id })
-      });
-      
-      // VERIFICA SE VEIO JSON MESMO
-      const text = await res.text();
-      if (!text) throw new Error("API retornou vazio");
-      
-      const data = JSON.parse(text);
-      
-      if (data.downloadUrl) window.open(data.downloadUrl, "_blank");
-      else if (data.url) window.open(data.url, "_blank");
-      else alert("Erro: " + text);
-    } catch (err) {
-      // PLANO B SE A API FALHAR - JÁ ABRE O DOWNLOAD DIRETO
-      const vid = videoIdParaBaixar || id;
-      window.open(`https://www.y2mate.is/youtube/${vid}`, "_blank");
-    }
-  }; 
+  const baixarVideo = async (corte) => {
+    // corte tem que ter { inicio, fim }
+    const vid = id;
+    const url = `/api/baixar?videoId=${vid}&inicio=${corte.inicio}&fim=${corte.fim}`;
+    
+    // Agora baixa o MP4 já cortado, não o YouTube
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `corta-ai-${corte.inicio}.mp4`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
       <header className="flex justify-between items-center p-4 max-w-6xl mx-auto">
