@@ -1,23 +1,29 @@
 export async function POST(req) {
-  const { videoId } = await req.json();
+  try {
+    const { videoId } = await req.json();
+    
+    // API que retorna link .mp4 direto
+    const cobaltRes = await fetch("https://api.cobalt.tools/api/json", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        vCodec: "h264",
+        vQuality: "720"
+      })
+    });
 
-  const r = await fetch("https://api.cobalt.tools/api/json", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Accept": "application/json" },
-    body: JSON.stringify({
-      url: `https://www.youtube.com/watch?v=${videoId}`,
-      vQuality: "720"
-    })
-  });
+    const cobaltData = await cobaltRes.json();
 
-  const data = await r.json();
-  const video = await fetch(data.url);
-
-  // ISSO AQUI É O VÍDEO DE VERDADE, NÃO FAKE
-  return new Response(video.body, {
-    headers: {
-      "Content-Type": "video/mp4",
-      "Content-Disposition": `attachment; filename="corte.mp4"`
+    // Se conseguiu o link direto .mp4, retorna
+    if (cobaltData.url) {
+      return Response.json({ url: cobaltData.url });
     }
-  });
+
+    // Se falhar, fallback
+    return Response.json({ url: `https://www.youtube.com/watch?v=${videoId}` });
+
+  } catch (e) {
+    return Response.json({ error: "erro", details: e.message }, { status: 500 });
+  }
 }
