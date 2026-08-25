@@ -1,26 +1,35 @@
 export async function POST(req) {
-  const { videoId } = await req.json();
+  try {
+    const { videoId } = await req.json();
 
-  const res = await fetch("https://api.cobalt.tools/api/json", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Accept": "application/json" },
-    body: JSON.stringify({
-      url: `https://www.youtube.com/watch?v=${videoId}`,
-      vQuality: "720", // <- PADRÃO: 720p = 10-15MB por minuto
-      filenamePattern: "basic"
-    }),
-  });
+    const cobaltRes = await fetch("https://api.cobalt.tools/api/json", {
+      method: "POST",
+      headers: { "Accept": "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        vQuality: "720",
+        filenamePattern: "basic"
+      })
+    });
 
-  const data = await res.json();
-  if (!data.url) return Response.json(data, { status: 500 });
+    const cobaltData = await cobaltRes.json();
+    
+    if (!cobaltData.url) {
+      return Response.json({ error: "YouTube bloqueou", details: cobaltData }, { status: 500 });
+    }
 
-  const video = await fetch(data.url);
-  const buffer = await video.arrayBuffer();
+    const videoRes = await fetch(cobaltData.url);
+    const buffer = await videoRes.arrayBuffer();
 
-  return new Response(buffer, {
-    headers: {
-      "Content-Type": "video/mp4",
-      "Content-Disposition": `attachment; filename="corte-1min-720p.mp4"`,
-    },
-  });
+    return new Response(buffer, {
+      headers: {
+        "Content-Type": "video/mp4",
+        "Content-Disposition": `attachment; filename="corte.mp4"`,
+        "Content-Length": buffer.byteLength.toString()
+      }
+    });
+
+  } catch (e) {
+    return Response.json({ error: e.message }, { status: 500 });
+  }
 }
