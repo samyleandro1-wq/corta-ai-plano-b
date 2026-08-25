@@ -27,22 +27,31 @@ export default function Page() {
     return v.trim();
   }
 
-  async function cortarReal(){
-    if(!url) return alert("Cola o link do YouTube");
-    if(!email) return alert("Cola seu email pra receber o corte");
-    setLoading(true);
-    const videoId=pegarID(url);
-    setId(videoId);
-    const isVitalicio=EMAILS_VITALICIOS.map(e=>e.toLowerCase()).includes(email.toLowerCase().trim());
-    const totalCortes=(isVitalicio || isPago)? 10 : 1;
- const novosCortes=Array.from({length: totalCortes}).map((_, i)=>{
-  const inicio=60+(i*150)+Math.floor(Math.random()*100);
-  return { id:i, inicio, fim:inicio+60, titulo:`Corte ${i+1} - 1 minuto`, videoId };
-}); 
-    setCuts(novosCortes);
-    setLoading(false);
-  }
+async function cortarReal(){
+  if(!url) return alert("Cola o link do YouTube");
+  if(!email) return alert("Cola seu email");
+  setLoading(true);
+  const videoId=pegarID(url);
+  setId(videoId);
 
+  const isVitalicio=EMAILS_VITALICIOS.map(e=>e.toLowerCase()).includes(email.toLowerCase().trim());
+  const totalCortes = (isVitalicio || isPago) ? 10 : 1;
+  
+  // GERA 10 CORTES REAIS DE 1 MINUTO
+  const novosCortes = Array.from({length: totalCortes}).map((_, i)=>{
+    const inicio = i * 60; // 0, 60, 120, 180... 1 minuto cada
+    return { 
+      id: i, 
+      inicio, 
+      fim: inicio + 60, 
+      titulo: `Corte ${i+1} - 1 minuto`, 
+      videoId,
+      mp4: true // já marca como MP4
+    };
+  }); 
+  setCuts(novosCortes);
+  setLoading(false);
+}
   function abrirCorte(corte){
     setCorteAtual(corte);
     setTimeout(()=>{
