@@ -64,15 +64,22 @@ export default function Page() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ videoId: videoIdParaBaixar || id })
       });
-      const data = await res.json();
+      
+      // VERIFICA SE VEIO JSON MESMO
+      const text = await res.text();
+      if (!text) throw new Error("API retornou vazio");
+      
+      const data = JSON.parse(text);
+      
       if (data.downloadUrl) window.open(data.downloadUrl, "_blank");
       else if (data.url) window.open(data.url, "_blank");
-      else alert("Erro: " + JSON.stringify(data));
+      else alert("Erro: " + text);
     } catch (err) {
-      alert("Erro ao baixar: " + err.message);
+      // PLANO B SE A API FALHAR - JÁ ABRE O DOWNLOAD DIRETO
+      const vid = videoIdParaBaixar || id;
+      window.open(`https://www.y2mate.is/youtube/${vid}`, "_blank");
     }
-  };
-
+  }; 
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
       <header className="flex justify-between items-center p-4 max-w-6xl mx-auto">
