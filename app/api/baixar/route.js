@@ -2,34 +2,30 @@ export async function POST(req) {
   try {
     const { videoId } = await req.json();
 
-    const cobaltRes = await fetch("https://api.cobalt.tools/api/json", {
+    // 1. Pega o link real
+    const r = await fetch("https://api.cobalt.tools/api/json", {
       method: "POST",
-      headers: { "Accept": "application/json", "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
         url: `https://www.youtube.com/watch?v=${videoId}`,
         vQuality: "720",
-        filenamePattern: "basic"
+        vCodec: "h264"
       })
     });
+    const j = await r.json();
+    if (!j.url) return Response.json({ erro: j }, { status: 500 });
 
-    const cobaltData = await cobaltRes.json();
+    // 2. Baixa de verdade e devolve como stream (não corrompe mais)
+    const video = await fetch(j.url);
     
-    if (!cobaltData.url) {
-      return Response.json({ error: "YouTube bloqueou", details: cobaltData }, { status: 500 });
-    }
-
-    const videoRes = await fetch(cobaltData.url);
-    const buffer = await videoRes.arrayBuffer();
-
-    return new Response(buffer, {
+    return new Response(video.body, {
       headers: {
         "Content-Type": "video/mp4",
         "Content-Disposition": `attachment; filename="corte.mp4"`,
-        "Content-Length": buffer.byteLength.toString()
       }
     });
 
   } catch (e) {
-    return Response.json({ error: e.message }, { status: 500 });
+    return Response.json({ erro: e.message }, { status: 500 });
   }
 }
