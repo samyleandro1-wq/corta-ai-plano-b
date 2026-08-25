@@ -5,7 +5,7 @@ export async function GET(req) {
   try {
     const r = await fetch(`https://invidious.nerdvpn.de/api/v1/videos/${videoId}`);
     const data = await r.json();
-    const mp4 = data.formatStreams[0];
+   const mp4 = data.formatStreams?.[0] || data.adaptiveFormats?.find(f => f.mimeType?.includes("video/mp4"));
 
     const video = await fetch(mp4.url);
     const buffer = await video.arrayBuffer();
