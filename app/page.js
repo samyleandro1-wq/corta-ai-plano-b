@@ -57,19 +57,14 @@ export default function Page() {
     setTimeout(()=>{ document.getElementById('player-do-corte')?.scrollIntoView({behavior:'smooth'}) },150)
   }
 
-  const baixarVideo = async (corte) => {
-    // corte tem que ter { inicio, fim }
-    const vid = id;
-    const url = `/api/baixar?videoId=${vid}&inicio=${corte.inicio}&fim=${corte.fim}`;
-    
-    // Agora baixa o MP4 já cortado, não o YouTube
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `corta-ai-${corte.inicio}.mp4`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
+const baixarVideo = (corte) => {
+  const ini = corte?.inicio?? corte?.start?? 0;
+  const fim = corte?.fim?? corte?.end?? 30;
+  const vid = corte?.videoId || corte?.id || id;
+
+  window.location.href = `/api/baixar?videoId=${vid}&inicio=${ini}&fim=${fim}`;
+};
+ 
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
       <header className="flex justify-between items-center p-4 max-w-6xl mx-auto">
@@ -103,7 +98,8 @@ export default function Page() {
                   <div><p className="font-bold">{c.titulo}</p><p className="text-xs text-white/50">{c.inicio}s - {c.fim}s</p></div>
                   <div className="flex gap-2">
                     <button onClick={()=>abrirCorte(c)} className="bg-white/10 px-3 py-1 rounded text-sm">Ver</button>
-                    <button onClick={()=>baixarVideo(c.videoId || id)} className="bg-purple-600 px-3 py-1 rounded text-sm font-bold">Baixar</button>
+                 <button onClick={() => baixarVideo(c)} className="bg-purple-600 px-3 py-1 rounded text-sm font-bold">Baixar</button>
+            
                   </div>
                 </div>
               ))}
