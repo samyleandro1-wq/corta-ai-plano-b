@@ -65,26 +65,23 @@ async function cortarReal(){
 
 const baixarVideo = async (index) => {
   try {
-    setBaixandoIndex(index);
     const res = await fetch("/api/baixar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ videoId })
     });
     
-    if (!res.ok) throw new Error("falha no download");
+    const data = await res.json();
     
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Corte ${index + 1} - 1 minuto.mp4`;
-    a.click();
-    URL.revokeObjectURL(url);
+    if (data.downloadUrl) {
+      window.open(data.downloadUrl, "_blank");
+    } else if (data.url) {
+      window.open(data.url, "_blank");
+    } else {
+      alert("Erro: " + JSON.stringify(data));
+    }
   } catch (err) {
     alert("Erro ao baixar: " + err.message);
-  } finally {
-    setBaixandoIndex(null);
   }
 };
   return (
