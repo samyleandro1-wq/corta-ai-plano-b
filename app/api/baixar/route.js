@@ -1,19 +1,33 @@
 export async function POST(req) {
-  try {
-    const { videoId } = await req.json();
-    const r = await fetch("https://api.cobalt.tools/api/json", {
-      method: "POST",
-      headers: { "Accept": "application/json", "Content-Type": "application/json" },
-      body: JSON.stringify({ url: `https://www.youtube.com/watch?v=${videoId}`, vQuality: "720" })
-    });
-    const j = await r.json();
-    if (!j.url) return Response.json(j, { status: 500 });
-    const video = await fetch(j.url);
-    const buf = await video.arrayBuffer();
-    return new Response(buf, {
-      headers: { "Content-Type": "video/mp4", "Content-Disposition": `attachment; filename="corte.mp4"` }
-    });
-  } catch (e) {
-    return Response.json({ error: e.message }, { status: 500 });
+  const { videoId } = await req.json();
+
+  // 1. Pega o link do YouTube
+  const res = await fetch("https://api.cobalt.tools/api/json", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: JSON.stringify({
+      url: `https://www.youtube.com/watch?v=${videoId}`,
+      vQuality: "720",
+    }),
+  });
+
+  const data = await res.json();
+  
+  if (!data.url) {
+    return Response.json({ error: "Cobalt não retornou url", data }, { status: 500 });
   }
+
+  // 2. Baixa o vídeo de verdade e devolve como MP4 (não como link)
+  const video = await fetch(data.url);
+  const buffer = await video.arrayBuffer();
+
+  return new Response(buffer, {
+    headers: {
+      "Content-Type": "video/mp4",
+      "Content-Disposition": `attachment; filename="corte.mp4"`,
+    },
+  });
 }
