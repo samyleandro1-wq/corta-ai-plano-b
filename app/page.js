@@ -63,37 +63,30 @@ async function cortarReal(){
     },100)
   }
 
-async function baixarVideo(videoId, inicio, index) {
+const baixarVideo = async (index) => {
   try {
-    setBaixandoId(videoId + "-" + index);
-    // Chama o servidor que baixa MP4 de verdade
+    setBaixandoIndex(index);
     const res = await fetch("/api/baixar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ videoId, inicio })
+      body: JSON.stringify({ videoId })
     });
-    const data = await res.json();
     
-    // Agora sim baixa o arquivo .mp4
-    const file = await fetch(data.url);
-    const blob = await file.blob();
-    const blobUrl = URL.createObjectURL(blob);
+    if (!res.ok) throw new Error("falha no download");
     
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = blobUrl;
-    a.download = `corte-${index + 1}-1min.mp4`;
-    document.body.appendChild(a);
+    a.href = url;
+    a.download = `Corte ${index + 1} - 1 minuto.mp4`;
     a.click();
-    a.remove();
-    URL.revokeObjectURL(blobUrl);
-    
-  } catch (e) {
-    console.log(e);
-    alert("Erro ao baixar MP4: " + e.message);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert("Erro ao baixar: " + err.message);
   } finally {
-    setBaixandoId(null);
+    setBaixandoIndex(null);
   }
-}
+};
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
       <header className="flex justify-between items-center p-4 max-w-6xl mx-auto">
