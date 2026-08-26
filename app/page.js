@@ -52,13 +52,12 @@ novosCortes.sort((a,b) => a.inicio - b.inicio);
     fetch(LINK_MAKE, { method:"POST", body: JSON.stringify({email, videoId, total:totalCortes}) }).catch(()=>{})
   }
 
-  function abrirCorte(corte){
-    setCorteAtual(corte);
-    const src=`https://www.youtube.com/embed/${id}?start=${corte.inicio}&end=${corte.fim}&autoplay=1`;
-    setPlayerSrc(src);
-    setTimeout(()=>{ document.getElementById('player-do-corte')?.scrollIntoView({behavior:'smooth'}) },150)
-  }
-
+function abrirCorte(corte){
+  setCorteAtual(corte);
+  const src=`/api/baixar?videoId=${corte.videoId}&inicio=${corte.inicio}&fim=${corte.fim}`;
+  setPlayerSrc(src);
+  setTimeout(()=>{ document.getElementById('player-do-corte')?.scrollIntoView({behavior:'smooth'}) },150)
+}
   const baixarVideo = (corte) => {
     const ini = corte?.inicio ?? 0;
     const fim = corte?.fim ?? 60;
