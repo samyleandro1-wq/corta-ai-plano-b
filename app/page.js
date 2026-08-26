@@ -87,11 +87,16 @@ novosCortes.sort((a,b) => a.inicio - b.inicio);
           <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole o link do YouTube" className="w-full p-3 rounded-lg bg-black/50 border border-white/10 text-white mb-3"/>
           <button onClick={cortarReal} className="w-full bg-purple-600 py-3 rounded-lg font-bold">GERAR CORTES</button>
           
-          {playerSrc && (
-            <div id="player-do-corte" className="mt-6">
-              <iframe src={playerSrc} className="w-full h-64 rounded-xl" allowFullScreen></iframe>
-            </div>
-          )}
+         {playerSrc && (
+  <div id="player-do-corte" className="mt-6">
+    <video 
+      src={playerSrc} 
+      controls 
+      autoPlay 
+      className="w-full h-64 rounded-xl bg-black"
+    />
+  </div>
+)} 
 
           <div className="mt-6 space-y-2 text-left">
             {cuts.map(c=>(
