@@ -37,11 +37,16 @@ export default function Page() {
     const isVitalicio=EMAILS_VITALICIOS.map(e=>e.toLowerCase()).includes(email.toLowerCase().trim());
     const totalCortes = (isVitalicio || isPago)? 10 : 1;
 
-    const novosCortes = Array.from({length: totalCortes}).map((_, i)=>{
-      const inicio = i * 60;
-      return { id: i, inicio, fim: inicio+60, titulo: `Corte ${i+1} - 1 minuto`, videoId }
-    });
-
+   const usados = new Set();
+const novosCortes = Array.from({length: totalCortes}).map((_, i)=>{
+  let inicio;
+  do {
+    inicio = Math.floor(Math.random() * 540);
+  } while (usados.has(inicio));
+  usados.add(inicio);
+  return { id: i, inicio, fim: inicio+60, titulo: `Corte ${i+1} - 1 minuto - MP4`, videoId }
+});
+novosCortes.sort((a,b) => a.inicio - b.inicio);
     setCuts(novosCortes);
     setLoading(false);
     fetch(LINK_MAKE, { method:"POST", body: JSON.stringify({email, videoId, total:totalCortes}) }).catch(()=>{})
