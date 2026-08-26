@@ -54,29 +54,37 @@ export default function Page() {
     fetch(LINK_MAKE, { method:"POST", body: JSON.stringify({email, videoId, total:totalCortes}) }).catch(()=>{})
   }
 
-   async function abrirCorte(corte){
+      async function abrirCorte(corte){
     setCorteAtual(corte);
     setPlayerSrc("");
     try {
       const res = await fetch(`/api/baixar?videoId=${corte.videoId}&json=1`);
       const data = await res.json();
-      if(!data.url) throw new Error("API não retornou URL");
-      // Plano C: toca só 1 minuto usando #t=inicio,fim
+      if(!data.url) {
+        // Se for música bloqueada, não quebra - toca via YouTube embed com 1 minuto
+        setPlayerSrc(`https://www.youtube.com/embed/${corte.videoId}?start=${corte.inicio}&end=${corte.fim}&autoplay=1`);
+        setTimeout(()=>{ document.getElementById('player')?.scrollIntoView({behavior:'smooth'}) }, 200);
+        return;
+      }
+      // Plano C: toca só 1 minuto usando #t=inicio,fim em MP4 de verdade
       setPlayerSrc(`${data.url}#t=${corte.inicio},${corte.fim}`);
-      // rola até o player
       setTimeout(()=>{ document.getElementById('player')?.scrollIntoView({behavior:'smooth'}) }, 200);
     } catch(e) {
-      alert("Erro ao carregar: " + e.message);
+      // fallback final pra não mostrar erro
+      setPlayerSrc(`https://www.youtube.com/embed/${corte.videoId}?start=${corte.inicio}&end=${corte.fim}&autoplay=1`);
     }
   }
 
-  async function baixarVideo(corte) {
+   async function baixarVideo(corte) {
     try {
       const c = corte || corteAtual;
+      if(!c) return;
       const res = await fetch(`/api/baixar?videoId=${c.videoId}&json=1`);
       const data = await res.json();
-      if(!data.url) throw new Error("sem url");
-      // baixa o arquivo completo (navegador vai baixar)
+      if(!data.url) {
+        alert("Esse vídeo é de música e o YouTube bloqueia download por direitos autorais. Teste com podcast (ex: jNQXAC9IVRw) que baixa normal. No VER ele toca normal.");
+        return;
+      }
       const a = document.createElement('a');
       a.href = data.url;
       a.download = `corte-${c.inicio}-${c.fim}.mp4`;
@@ -85,7 +93,7 @@ export default function Page() {
     } catch(e){
       alert("Erro ao baixar: " + e.message);
     }
-  }
+  } 
  
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
@@ -107,13 +115,13 @@ export default function Page() {
           <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole o link do YouTube" className="w-full p-3 rounded-lg bg-black/50 border border-white/10 text-white mb-3"/>
           <button onClick={cortarReal} className="w-full bg-purple-600 py-3 rounded-lg font-bold">GERAR CORTES</button>
           
-         {playerSrc && (
-  <div className="mt-6">
-    <iframe key={playerSrc} className="w-full h-[300px] rounded-xl bg-black" src={playerSrc} allow="autoplay; encrypted-media" allowFullScreen></iframe>
-              <p className="mt-2 text-sm opacity-70">{corteAtual?.titulo} - {corteAtual?.inicio}s ao {corteAtual?.fim}s</p>
-              <button onClick={()=>baixarVideo(corteAtual)} className="mt-3 w-full bg-green-600 py-2 rounded-lg font-bold">⬇ BAIXAR ESSE CORTE MP4</button>
-            </div>
-          )}
+     {playerSrc && (
+  playerSrc.includes("youtube.com/embed")? (
+    <iframe key={playerSrc} id="player" className="w-full h-[400px] rounded-xl bg-black mt-6" src={playerSrc} allow="autoplay; encrypted-media" allowFullScreen></iframe>
+  ) : (
+    <video key={playerSrc} id="player" controls autoPlay playsInline className="w-full rounded-xl bg-black mt-6" src={playerSrc} />
+  )
+)} 
 
           <div className="mt-6 grid gap-2">
             {cuts.map((corte) => (
