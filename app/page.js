@@ -60,20 +60,32 @@ export default function Page() {
     try {
       const res = await fetch(`/api/baixar?videoId=${corte.videoId}&json=1`);
       const data = await res.json();
-      console.log("MP4 URL:", data.url); // pra você ver no console
-      if(!data.url) throw new Error("sem url");
+      if(!data.url) throw new Error("API não retornou URL");
+      // Plano C: toca só 1 minuto usando #t=inicio,fim
       setPlayerSrc(`${data.url}#t=${corte.inicio},${corte.fim}`);
+      // rola até o player
+      setTimeout(()=>{ document.getElementById('player')?.scrollIntoView({behavior:'smooth'}) }, 200);
     } catch(e) {
-      alert("Erro ao carregar MP4: " + e.message + " - verifica seu /api/baixar/route.js");
+      alert("Erro ao carregar: " + e.message);
     }
   }
 
-  const baixarVideo = (corte) => {
-    const ini = corte?.inicio ?? 0;
-    const fim = corte?.fim ?? 60;
-    const vid = corte?.videoId || id;
-    window.location.href = `/api/baixar?videoId=${vid}&inicio=${ini}&fim=${fim}`;
-  };
+  async function baixarVideo(corte) {
+    try {
+      const c = corte || corteAtual;
+      const res = await fetch(`/api/baixar?videoId=${c.videoId}&json=1`);
+      const data = await res.json();
+      if(!data.url) throw new Error("sem url");
+      // baixa o arquivo completo (navegador vai baixar)
+      const a = document.createElement('a');
+      a.href = data.url;
+      a.download = `corte-${c.inicio}-${c.fim}.mp4`;
+      a.target = "_blank";
+      a.click();
+    } catch(e){
+      alert("Erro ao baixar: " + e.message);
+    }
+  }
  
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
