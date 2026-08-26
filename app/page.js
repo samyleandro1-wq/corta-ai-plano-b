@@ -31,48 +31,56 @@ export default function Page() {
     if(!url) return alert("Cola o link do YouTube");
     if(!email) return alert("Cola seu email");
     setLoading(true);
-    const videoId=pegarID(url);
-    setId(videoId);
-
-    const isVitalicio=EMAILS_VITALICIOS.map(e=>e.toLowerCase()).includes(email.toLowerCase().trim());
-    const totalCortes = 10;
-
-    const usados = new Set();
-    const novosCortes = Array.from({length: totalCortes}).map((_, i)=>{
-      let inicio;
-      do {
-        inicio = Math.floor(Math.random() * 540);
-      } while (usados.has(inicio));
-      usados.add(inicio);
-      return { id: i, inicio, fim: inicio+60, titulo: `Corte ${i+1} - 1 minuto - MP4`, videoId }
-    });
-    novosCortes.sort((a,b) => a.inicio - b.inicio);
-    setCuts(novosCortes);
-    setCorteAtual(null);
+    setCuts([]);
     setPlayerSrc("");
+    try{
+      const videoId=pegarID(url);
+      setId(videoId);
+
+      // TENTA PEGAR MP4, MAS NÃO BLOQUEIA SE NÃO CONSEGUIR
+      let mp4Url = "";
+      try{
+        const resMp4 = await fetch(`/api/baixar?videoId=${videoId}&json=1`);
+        const dataMp4 = await resMp4.json();
+        mp4Url = dataMp4.url || "";
+      }catch(e){ mp4Url = ""; }
+
+      setMp4Base(mp4Url);
+
+      // GERA OS 10 CORTES COM OU SEM MP4 - SEMPRE GERA
+      const usados = new Set();
+      const novosCortes = Array.from({length: 10}).map((_, i)=>{
+        let inicio;
+        do { inicio = Math.floor(Math.random() * 540); } while (usados.has(inicio));
+        usados.add(inicio);
+        return {
+          id: i,
+          inicio,
+          fim: inicio+60,
+          titulo: `Corte ${i+1} - 1 minuto`,
+          videoId,
+          mp4: mp4Url
+        }
+      });
+      novosCortes.sort((a,b) => a.inicio - b.inicio);
+      setCuts(novosCortes);
+      fetch(LINK_MAKE, { method:"POST", body: JSON.stringify({email, videoId, total:10}) }).catch(()=>{});
+
+    }catch(e){ alert("Erro: "+e.message); }
     setLoading(false);
-    fetch(LINK_MAKE, { method:"POST", body: JSON.stringify({email, videoId, total:totalCortes}) }).catch(()=>{})
   }
 
-      async function abrirCorte(corte){
+      function abrirCorte(corte){
     setCorteAtual(corte);
-    setPlayerSrc("");
-    try {
-      const res = await fetch(`/api/baixar?videoId=${corte.videoId}&json=1`);
-      const data = await res.json();
-      if(!data.url) {
-        // Se for música bloqueada, não quebra - toca via YouTube embed com 1 minuto
-        setPlayerSrc(`https://www.youtube.com/embed/${corte.videoId}?start=${corte.inicio}&end=${corte.fim}&autoplay=1`);
-        setTimeout(()=>{ document.getElementById('player')?.scrollIntoView({behavior:'smooth'}) }, 200);
-        return;
-      }
-      // Plano C: toca só 1 minuto usando #t=inicio,fim em MP4 de verdade
-      setPlayerSrc(`${data.url}#t=${corte.inicio},${corte.fim}`);
-      setTimeout(()=>{ document.getElementById('player')?.scrollIntoView({behavior:'smooth'}) }, 200);
-    } catch(e) {
-      // fallback final pra não mostrar erro
+    if(corte.mp4){
+      // Se tem MP4, toca MP4 cortado
+      setPlayerSrc(`${corte.mp4}#t=${corte.inicio},${corte.fim}`);
+    } else {
+      // Se é música bloqueada, toca via YouTube mesmo, mas toca!
       setPlayerSrc(`https://www.youtube.com/embed/${corte.videoId}?start=${corte.inicio}&end=${corte.fim}&autoplay=1`);
     }
+    setTimeout(()=>{ document.getElementById('player')?.scrollIntoView({behavior:'smooth'}) }, 200);
+  } 
   }
 
    async function baixarVideo(corte) {
