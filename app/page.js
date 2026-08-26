@@ -39,31 +39,28 @@ export default function Page() {
 
     const novosCortes = Array.from({length: totalCortes}).map((_, i)=>{
       const inicio = i * 60;
-      return { id: i, inicio, fim: inicio+60, titulo: `Corte ${i+1} - 1 minuto`, videoId, mp4: true }
+      return { id: i, inicio, fim: inicio+60, titulo: `Corte ${i+1} - 1 minuto`, videoId }
     });
 
     setCuts(novosCortes);
     setLoading(false);
-
-    // avisa o Make
     fetch(LINK_MAKE, { method:"POST", body: JSON.stringify({email, videoId, total:totalCortes}) }).catch(()=>{})
   }
 
   function abrirCorte(corte){
     setCorteAtual(corte);
-    // AGORA SEM getElementById - usa state, não quebra mais
     const src=`https://www.youtube.com/embed/${id}?start=${corte.inicio}&end=${corte.fim}&autoplay=1`;
     setPlayerSrc(src);
     setTimeout(()=>{ document.getElementById('player-do-corte')?.scrollIntoView({behavior:'smooth'}) },150)
   }
 
-const baixarVideo = (corte) => {
-  const ini = corte?.inicio?? corte?.start?? 0;
-  const fim = corte?.fim?? corte?.end?? 30;
-  const vid = corte?.videoId || corte?.id || id;
-
-  window.location.href = `/api/baixar?videoId=${vid}&inicio=${ini}&fim=${fim}`;
-};
+  const baixarVideo = (corte) => {
+    const ini = corte?.inicio ?? 0;
+    const fim = corte?.fim ?? 60;
+    const vid = corte?.videoId || id;
+    // AGORA BAIXA MP4 CORTADO DE VERDADE
+    window.location.href = `/api/baixar?videoId=${vid}&inicio=${ini}&fim=${fim}`;
+  };
  
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
@@ -83,28 +80,25 @@ const baixarVideo = (corte) => {
         <div id="corte" className="mt-16 bg-white/5 p-6 rounded-2xl max-w-2xl mx-auto border border-white/10">
           <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Seu email" className="w-full p-3 rounded-lg bg-black/50 border border-white/10 text-white mb-3" type="email"/>
           <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole o link do YouTube" className="w-full p-3 rounded-lg bg-black/50 border border-white/10 text-white mb-3"/>
-          <button onClick={cortarReal} className="w-full bg-purple-600 py-3 rounded-lg font-bold">Cortar Agora</button>
-
+          <button onClick={cortarReal} className="w-full bg-purple-600 py-3 rounded-lg font-bold">GERAR CORTES</button>
+          
           {playerSrc && (
-            <div className="mt-8">
-              <iframe id="player-do-corte" src={playerSrc} className="w-full h-[300px] rounded-xl" allow="autoplay; encrypted-media" allowFullScreen></iframe>
+            <div id="player-do-corte" className="mt-6">
+              <iframe src={playerSrc} className="w-full h-64 rounded-xl" allowFullScreen></iframe>
             </div>
           )}
 
-          {cuts.length > 0 && (
-            <div className="mt-8 grid gap-3 text-left">
-              {cuts.map((c, idx) => (
-                <div key={c.id} className="flex justify-between items-center bg-black/50 p-3 rounded-lg border border-white/10">
-                  <div><p className="font-bold">{c.titulo}</p><p className="text-xs text-white/50">{c.inicio}s - {c.fim}s</p></div>
-                  <div className="flex gap-2">
-                    <button onClick={()=>abrirCorte(c)} className="bg-white/10 px-3 py-1 rounded text-sm">Ver</button>
-                 <button onClick={() => baixarVideo(c)} className="bg-purple-600 px-3 py-1 rounded text-sm font-bold">Baixar</button>
-            
-                  </div>
+          <div className="mt-6 space-y-2 text-left">
+            {cuts.map(c=>(
+              <div key={c.id} className="flex justify-between items-center bg-black/30 p-3 rounded-lg">
+                <span>{c.titulo}</span>
+                <div className="flex gap-2">
+                  <button onClick={()=>abrirCorte(c)} className="bg-white/10 px-3 py-1 rounded">Ver</button>
+                  <button onClick={()=>baixarVideo(c)} className="bg-purple-500 px-3 py-1 rounded">Baixar</button>
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </div>
       </main>
     </div>
