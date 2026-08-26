@@ -35,14 +35,13 @@ export default function Page() {
     setId(videoId);
 
     const isVitalicio=EMAILS_VITALICIOS.map(e=>e.toLowerCase()).includes(email.toLowerCase().trim());
-    // AGORA SEMPRE 10 CORTES DE 1 MINUTO ALEATÓRIO
     const totalCortes = 10;
 
     const usados = new Set();
     const novosCortes = Array.from({length: totalCortes}).map((_, i)=>{
       let inicio;
       do {
-        inicio = Math.floor(Math.random() * 540); // até 9 min pra garantir 1 min de corte
+        inicio = Math.floor(Math.random() * 540);
       } while (usados.has(inicio));
       usados.add(inicio);
       return { id: i, inicio, fim: inicio+60, titulo: `Corte ${i+1} - 1 minuto - MP4`, videoId }
@@ -55,20 +54,19 @@ export default function Page() {
     fetch(LINK_MAKE, { method:"POST", body: JSON.stringify({email, videoId, total:totalCortes}) }).catch(()=>{})
   }
 
-  // VER - abre o MP4 puro só com 1 minuto
   async function abrirCorte(corte){
     setCorteAtual(corte);
     setPlayerSrc("");
     const res = await fetch(`/api/baixar?videoId=${corte.videoId}&json=1`);
     const data = await res.json();
-    // #t= faz o player mostrar só 1 minuto em MP4 puro
     setPlayerSrc(`${data.url}#t=${corte.inicio},${corte.fim}`);
   }
 
-  // BAIXAR - baixa MP4 pro PC e Android
   const baixarVideo = (corte) => {
+    const ini = corte?.inicio ?? 0;
+    const fim = corte?.fim ?? 60;
     const vid = corte?.videoId || id;
-    window.location.href = `/api/baixar?videoId=${vid}`;
+    window.location.href = `/api/baixar?videoId=${vid}&inicio=${ini}&fim=${fim}`;
   };
  
   return (
@@ -94,7 +92,7 @@ export default function Page() {
           {playerSrc && (
             <div className="mt-6">
               <video key={playerSrc} controls autoPlay playsInline className="w-full rounded-xl bg-black" src={playerSrc} />
-              <p className="mt-2 text-sm opacity-70">{corteAtual?.titulo}</p>
+              <p className="mt-2 text-sm opacity-70">{corteAtual?.titulo} - {corteAtual?.inicio}s ao {corteAtual?.fim}s</p>
               <button onClick={()=>baixarVideo(corteAtual)} className="mt-3 w-full bg-green-600 py-2 rounded-lg font-bold">⬇ BAIXAR ESSE CORTE MP4</button>
             </div>
           )}
