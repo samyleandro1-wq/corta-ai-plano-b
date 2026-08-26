@@ -107,9 +107,9 @@ export default function Page() {
           <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole o link do YouTube" className="w-full p-3 rounded-lg bg-black/50 border border-white/10 text-white mb-3"/>
           <button onClick={cortarReal} className="w-full bg-purple-600 py-3 rounded-lg font-bold">GERAR CORTES</button>
           
-          {playerSrc && (
-            <div className="mt-6">
-              <video key={playerSrc} controls autoPlay playsInline className="w-full rounded-xl bg-black" src={playerSrc} />
+         {playerSrc && (
+  <div className="mt-6">
+    <iframe key={playerSrc} className="w-full h-[300px] rounded-xl bg-black" src={playerSrc} allow="autoplay; encrypted-media" allowFullScreen></iframe>
               <p className="mt-2 text-sm opacity-70">{corteAtual?.titulo} - {corteAtual?.inicio}s ao {corteAtual?.fim}s</p>
               <button onClick={()=>baixarVideo(corteAtual)} className="mt-3 w-full bg-green-600 py-2 rounded-lg font-bold">⬇ BAIXAR ESSE CORTE MP4</button>
             </div>
