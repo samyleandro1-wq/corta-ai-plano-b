@@ -35,34 +35,41 @@ export default function Page() {
     setId(videoId);
 
     const isVitalicio=EMAILS_VITALICIOS.map(e=>e.toLowerCase()).includes(email.toLowerCase().trim());
-    const totalCortes = (isVitalicio || isPago)? 10 : 1;
+    // AGORA SEMPRE 10 CORTES DE 1 MINUTO ALEATÓRIO
+    const totalCortes = 10;
 
-   const usados = new Set();
-const novosCortes = Array.from({length: totalCortes}).map((_, i)=>{
-  let inicio;
-  do {
-    inicio = Math.floor(Math.random() * 540);
-  } while (usados.has(inicio));
-  usados.add(inicio);
-  return { id: i, inicio, fim: inicio+60, titulo: `Corte ${i+1} - 1 minuto - MP4`, videoId }
-});
-novosCortes.sort((a,b) => a.inicio - b.inicio);
+    const usados = new Set();
+    const novosCortes = Array.from({length: totalCortes}).map((_, i)=>{
+      let inicio;
+      do {
+        inicio = Math.floor(Math.random() * 540); // até 9 min pra garantir 1 min de corte
+      } while (usados.has(inicio));
+      usados.add(inicio);
+      return { id: i, inicio, fim: inicio+60, titulo: `Corte ${i+1} - 1 minuto - MP4`, videoId }
+    });
+    novosCortes.sort((a,b) => a.inicio - b.inicio);
     setCuts(novosCortes);
+    setCorteAtual(null);
+    setPlayerSrc("");
     setLoading(false);
     fetch(LINK_MAKE, { method:"POST", body: JSON.stringify({email, videoId, total:totalCortes}) }).catch(()=>{})
   }
 
-function abrirCorte(corte){
-  setCorteAtual(corte);
-  const src=`/api/baixar?videoId=${corte.videoId}&inicio=${corte.inicio}&fim=${corte.fim}`;
-  setPlayerSrc(src);
-}
-const baixarVideo = (corte) => {
-  const ini = corte?.inicio ?? 0;
-  const fim = corte?.fim ?? 60;
-  const vid = corte?.videoId || id;
-  window.location.href = `/api/baixar?videoId=${vid}&inicio=${ini}&fim=${fim}`;
-};
+  // VER - abre o MP4 puro só com 1 minuto
+  async function abrirCorte(corte){
+    setCorteAtual(corte);
+    setPlayerSrc("");
+    const res = await fetch(`/api/baixar?videoId=${corte.videoId}&json=1`);
+    const data = await res.json();
+    // #t= faz o player mostrar só 1 minuto em MP4 puro
+    setPlayerSrc(`${data.url}#t=${corte.inicio},${corte.fim}`);
+  }
+
+  // BAIXAR - baixa MP4 pro PC e Android
+  const baixarVideo = (corte) => {
+    const vid = corte?.videoId || id;
+    window.location.href = `/api/baixar?videoId=${vid}`;
+  };
  
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
@@ -84,24 +91,21 @@ const baixarVideo = (corte) => {
           <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole o link do YouTube" className="w-full p-3 rounded-lg bg-black/50 border border-white/10 text-white mb-3"/>
           <button onClick={cortarReal} className="w-full bg-purple-600 py-3 rounded-lg font-bold">GERAR CORTES</button>
           
-         {playerSrc && (
-  <div id="player-do-corte" className="mt-6">
-    <video 
-      src={playerSrc} 
-      controls 
-      autoPlay 
-      className="w-full h-64 rounded-xl bg-black"
-    />
-  </div>
-)} 
+          {playerSrc && (
+            <div className="mt-6">
+              <video key={playerSrc} controls autoPlay playsInline className="w-full rounded-xl bg-black" src={playerSrc} />
+              <p className="mt-2 text-sm opacity-70">{corteAtual?.titulo}</p>
+              <button onClick={()=>baixarVideo(corteAtual)} className="mt-3 w-full bg-green-600 py-2 rounded-lg font-bold">⬇ BAIXAR ESSE CORTE MP4</button>
+            </div>
+          )}
 
-          <div className="mt-6 space-y-2 text-left">
-            {cuts.map(c=>(
-              <div key={c.id} className="flex justify-between items-center bg-black/30 p-3 rounded-lg">
-                <span>{c.titulo}</span>
+          <div className="mt-6 grid gap-2">
+            {cuts.map((corte) => (
+              <div key={corte.id} className="flex justify-between items-center bg-black/30 p-3 rounded-lg border border-white/10">
+                <span className="text-sm text-left">{corte.titulo} ({corte.inicio}s - {corte.fim}s)</span>
                 <div className="flex gap-2">
-                  <button onClick={()=>abrirCorte(c)} className="bg-white/10 px-3 py-1 rounded">Ver</button>
-                  <button onClick={()=>baixarVideo(c)} className="bg-purple-500 px-3 py-1 rounded">Baixar</button>
+                  <button onClick={()=>abrirCorte(corte)} className="bg-white/10 px-3 py-1 rounded text-sm">VER</button>
+                  <button onClick={()=>baixarVideo(corte)} className="bg-purple-600 px-3 py-1 rounded text-sm">BAIXAR</button>
                 </div>
               </div>
             ))}
