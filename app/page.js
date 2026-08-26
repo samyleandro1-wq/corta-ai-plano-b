@@ -56,15 +56,13 @@ function abrirCorte(corte){
   setCorteAtual(corte);
   const src=`/api/baixar?videoId=${corte.videoId}&inicio=${corte.inicio}&fim=${corte.fim}`;
   setPlayerSrc(src);
-  setTimeout(()=>{ document.getElementById('player-do-corte')?.scrollIntoView({behavior:'smooth'}) },150)
 }
-  const baixarVideo = (corte) => {
-    const ini = corte?.inicio ?? 0;
-    const fim = corte?.fim ?? 60;
-    const vid = corte?.videoId || id;
-    // AGORA BAIXA MP4 CORTADO DE VERDADE
-    window.location.href = `/api/baixar?videoId=${vid}&inicio=${ini}&fim=${fim}`;
-  };
+const baixarVideo = (corte) => {
+  const ini = corte?.inicio ?? 0;
+  const fim = corte?.fim ?? 60;
+  const vid = corte?.videoId || id;
+  window.location.href = `/api/baixar?videoId=${vid}&inicio=${ini}&fim=${fim}`;
+};
  
   return (
     <div className="min-h-screen bg-[#0a0614] text-white">
